@@ -1,0 +1,5 @@
+Generic single-database configuration.
+
+- Usage:
+  alembic revision --autogenerate -m "your message"
+  alembic upgrade head

@@ -10,17 +10,15 @@
 
 <body>
     <div class="container mt-5">
-        <h2>Add Item</h2>
-        <form hx-post="/submit/" hx-target="#response" hx-swap="innerHTML" class="mb-3">
+        <h2>SmartPlay AI</h2>
+        <form hx-post="/questions/create" hx-target="#response" hx-swap="innerHTML" class="mb-3">
             <div class="mb-3">
-                <label for="itemName" class="form-label">Item Name</label>
-                <input type="text" class="form-control" id="itemName" name="item_name" required>
+                <label class="form-label">Scenario Question - {{theme}} : what would you do ?</label>
+                <div class="alert alert-info">{{ question }}</div>
             </div>
-            <div class="mb-3">
-                <label for="itemDesc" class="form-label">Item Description</label>
-                <input type="text" class="form-control" id="itemDesc" name="item_desc" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <input type="hidden" name="theme" value="{{ theme }}">
+            <input type="hidden" name="question_text" value="{{ question }}">
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
         <div id="response"></div>
     </div>

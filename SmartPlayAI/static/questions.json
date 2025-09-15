@@ -1,0 +1,529 @@
+[
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "You fall into icy water and your body temperature plummets rapidly."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "wildlife",
+    "question_text": "A venomous snake bites your leg miles away from help."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "A wildfire blocks your escape route as smoke thickens around you."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "accident",
+    "question_text": "Your parachute fails to open during a skydive."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "wildlife",
+    "question_text": "A bear charges you at full speed in the forest."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "You are lost in the desert with the sun overhead and no water."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "An avalanche buries you under a wall of snow."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "environment",
+    "question_text": "A riptide drags you far away from the shore into open sea."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "resource",
+    "question_text": "Your food is poisoned and your stomach cramps violently."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "wildlife",
+    "question_text": "A jaguar stalks silently just beyond your torchlight."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "You inhale toxic fumes in a collapsed mine shaft."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "A lightning storm strikes while you are exposed on a mountaintop."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "wildlife",
+    "question_text": "A shark fin cuts through the water as you swim for shore."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "accident",
+    "question_text": "Your leg is caught in a steel trap in a remote forest."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "A collapsing glacier cracks beneath your feet."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "environment",
+    "question_text": "You are surrounded by quicksand and sinking fast."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "A flash flood tears through the canyon you are exploring."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "environment",
+    "question_text": "Your oxygen tank runs empty while diving deep underwater."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "resource",
+    "question_text": "Your only water source is tainted, and you are already dehydrated."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "A desperate man holds a knife to your throat demanding your backpack."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "You wake up tied to a chair in an abandoned warehouse."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "human_threat",
+    "question_text": "Two strangers argue violently over your food supply while you’re trapped between them."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "A kidnapper forces you into the trunk of a moving car."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "A rival survivor poisons your water without your knowledge."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "You are cornered in a ruined building as looters set it on fire."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "A sniper targets you whenever you step out into the open street."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "Masked attackers surround your camp in the middle of the night."
+  },
+  {
+    "theme": "survival",
+    "severity": "critical",
+    "subcategory": "human_threat",
+    "question_text": "A wounded man begs for help, but you see his friends aiming weapons at you."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "psychological",
+    "question_text": "You are trapped in total darkness underground, and panic begins to set in."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "psychological",
+    "question_text": "You haven’t eaten in days, and hallucinations start to blur reality from danger."
+  },
+  {
+    "theme": "survival",
+    "severity": "high",
+    "subcategory": "psychological",
+    "question_text": "You are utterly alone in a jungle and hear whispers with no source."
+  },
+  
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "presentation",
+    "question_text": "You are ordered to present on a project you know nothing about in front of the board."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "sabotage",
+    "question_text": "A colleague secretly sabotages your files before a major client meeting."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "blame",
+    "question_text": "Your manager insists you take responsibility for a massive financial error you didn’t make."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "reputation",
+    "question_text": "A senior executive publicly challenges your competence in a high-stakes presentation."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "security",
+    "question_text": "Your email with confidential information was mistakenly sent to a competitor."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "deadline",
+    "question_text": "You must cover for two absent coworkers while meeting a critical deadline."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "client",
+    "question_text": "A client threatens to cancel a million-dollar deal unless you fix their issue immediately."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "cybersecurity",
+    "question_text": "Your company system is hacked, and you’re blamed for not preventing it."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "rumor",
+    "question_text": "A rival employee spreads a rumor that you leaked company secrets."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "harassment",
+    "question_text": "A coworker accuses you of harassment in front of the entire team."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "technical_failure",
+    "question_text": "A critical presentation file is corrupted five minutes before a global broadcast."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "team_conflict",
+    "question_text": "Your team turns against you, blaming you for a failed project to save themselves."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "management",
+    "question_text": "A manager demands you work through the night or risk losing your job."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "resource_conflict",
+    "question_text": "You are caught between two departments fighting over the same scarce resources."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "promotion",
+    "question_text": "Your promotion depends on completing a task with deliberately incomplete instructions."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "client_conflict",
+    "question_text": "Your company’s biggest client refuses to work with you personally after a misunderstanding."
+  },
+  {
+    "theme": "work",
+    "severity": "critical",
+    "subcategory": "politics",
+    "question_text": "Your team members secretly meet with your boss to push you out of leadership."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "punctuality",
+    "question_text": "You regularly arrive a few minutes late to team meetings, and colleagues start to notice."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "communication",
+    "question_text": "Your emails often lack details, forcing coworkers to ask for clarification."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "initiative",
+    "question_text": "You rarely contribute ideas during brainstorming sessions, leaving others to lead."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "organization",
+    "question_text": "Your desk is always cluttered, and visiting clients notice the disorganization."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "feedback",
+    "question_text": "You postpone giving feedback on your teammate’s work until it’s too late to adjust."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "engagement",
+    "question_text": "You don’t turn your camera on during virtual meetings while everyone else does."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "effort",
+    "question_text": "You avoid volunteering for small extra tasks, so others carry the load."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "quality",
+    "question_text": "Your written reports are accurate but full of typos and formatting mistakes."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "respect",
+    "question_text": "You tend to talk over colleagues when discussions get heated."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "recognition",
+    "question_text": "You forget to acknowledge the contributions of teammates in group projects."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "focus",
+    "question_text": "You frequently check your phone during meetings, and people notice."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "communication",
+    "question_text": "You sometimes miss internal updates because you skim through emails too quickly."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "preparation",
+    "question_text": "You arrive unprepared for recurring weekly check-ins with your manager."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "initiative",
+    "question_text": "You tend to stay silent when the team needs someone to volunteer for action items."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "engagement",
+    "question_text": "You rarely engage in casual conversations, making you seem distant from the team."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "visibility",
+    "question_text": "You deliver strong work but fail to share progress updates along the way."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "detail",
+    "question_text": "You occasionally misspell client names in communications."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "initiative",
+    "question_text": "You stay quiet during big presentations, letting others take all the credit."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "gratitude",
+    "question_text": "You rarely show appreciation for colleagues’ help, even when they assist you directly."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "cultural",
+    "question_text": "You misinterpret a colleague’s cultural communication style, causing tension in a team project."
+  },
+  {
+    "theme": "work",
+    "severity": "gradual",
+    "subcategory": "technology",
+    "question_text": "You struggle to adapt to a new workplace software while others move ahead quickly."
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "Tell me about yourself and your background relevant to this role."
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "What are your greatest strengths and how do they apply here?"
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "What is your biggest professional weakness and how are you addressing it?"
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "Where do you see yourself in five years?"
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "Why do you want to work at our company?"
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "Why are you leaving your current job?"
+  },
+  {
+    "subcategory": "standard_hr",
+    "theme": "interview",
+    "question_text": "What motivates you in your work?"
+  },
+
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Tell me about a time you faced a conflict at work. How did you resolve it?"
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Describe a time you missed a deadline. What happened and what did you learn?"
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Give an example of when you had to adapt quickly to a major change."
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Tell me about a project you led. What challenges did you face and how did you manage them?"
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Describe a time you worked with a difficult team member."
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "How do you prioritize tasks when everything feels urgent?"
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Tell me about a decision you made with incomplete information."
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Give me an example of a time you received constructive feedback. How did you respond?"
+  },
+  {
+    "subcategory": "behavioral",
+    "theme": "interview",
+    "question_text": "Tell me about a time you went above and beyond at work."
+  },
+
+  {
+    "subcategory": "practical_problem",
+    "theme": "interview",
+    "question_text": "How do you handle unclear instructions on a critical task?"
+  },
+  {
+    "subcategory": "practical_problem",
+    "theme": "interview",
+    "question_text": "How would you handle working with limited resources or budget constraints?"
+  },
+  {
+    "subcategory": "practical_problem",
+    "theme": "interview",
+    "question_text": "What would you do if your manager gave you conflicting priorities?"
+  },
+  {
+    "subcategory": "practical_problem",
+    "theme": "interview",
+    "question_text": "How do you prepare for presenting complex information to a non-technical audience?"
+  },
+  {
+    "subcategory": "practical_problem",
+    "theme": "interview",
+    "question_text": "How do you ensure your work remains accurate under tight deadlines?"
+  },
+  {
+    "subcategory": "practical_problem",
+    "theme": "interview",
+    "question_text": "What steps do you take to stay organized when managing multiple projects?"
+  }
+]
