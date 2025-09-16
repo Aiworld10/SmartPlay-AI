@@ -1,5 +1,7 @@
-from pyexpat import model
-from fastapi import FastAPI, Request, Form, Depends
+
+from router.authenticate import _get_user_from_token
+from typing import Optional
+from fastapi import FastAPI, HTTPException, Request, Form, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -8,6 +10,8 @@ from transformers import pipeline  # local dev
 from huggingface_hub import InferenceClient  # inference API for production
 import random
 
+from model import schemas
+from model.database import get_session
 from router import players, questions, responses, authenticate
 
 
@@ -105,7 +109,20 @@ def generate_question(theme: str) -> str:
         return fallback_questions.get(theme, fallback_questions["survival"])
 
 
+async def optional_current_user(
+    request: Request,
+    db: AsyncSession = Depends(get_session),
+) -> Optional[schemas.PlayerBase]:
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
+    try:
+        return await _get_user_from_token(token, db)
+    except HTTPException:
+        return None
+
 # ----------- ROUTES ------------
+
 
 @app.get("/generate_question", response_class=HTMLResponse)
 async def generate_question_form(request: Request):
@@ -121,9 +138,11 @@ async def generate_question_form(request: Request):
 
 
 @app.get('/', response_class=HTMLResponse)
-async def index(request: Request):
+async def index(request: Request,
+                current_user: Optional[schemas.PlayerBase] = Depends(optional_current_user)):
     """Render the main index page."""
-    return templates.TemplateResponse("index.html", {"request": request})
+    # print("Current user:", current_user)
+    return templates.TemplateResponse("index.html", {"request": request, "user": current_user})
 
 
 if __name__ == "__main__":

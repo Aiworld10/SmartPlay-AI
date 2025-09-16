@@ -3,7 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from . import models, schemas
 from typing import List
+from passlib.context import CryptContext
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #######################################################
 # Players CRUD
 #######################################################
@@ -31,7 +33,7 @@ async def get_player_by_name(db: AsyncSession, name: str):
     return result.scalar_one_or_none()
 
 
-async def create_player(db: AsyncSession, player: schemas.PlayerCreate):
+async def create_player(db: AsyncSession, player: schemas.PlayerCreate, plain_password: str):
     """
     Create a new Player instance.
 
@@ -42,11 +44,13 @@ async def create_player(db: AsyncSession, player: schemas.PlayerCreate):
     Returns:
         Player: The newly created Player object.
     """
-    db_player = models.Player(name=player.name, score=player.score)
-    db.add(db_player)
+    hashed_password = pwd_context.hash(plain_password)
+    user = models.Player(
+        name=player.name, score=player.score, password_hash=hashed_password)
+    db.add(user)
     await db.commit()
-    await db.refresh(db_player)
-    return db_player
+    await db.refresh(user)
+    return user
 
 ######################################################
 # Questions CRUD

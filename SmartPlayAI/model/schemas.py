@@ -13,6 +13,7 @@ class PlayerBase(BaseModel):
     score: Optional[int] = 0
     created_at: AwareDatetime = Field(
         default_factory=lambda: datetime.now(timezone.utc))
+    disabled: bool = False
 
 
 class PlayerCreate(PlayerBase):
@@ -20,9 +21,11 @@ class PlayerCreate(PlayerBase):
     pass
 
 
-class PlayerUpdate(PlayerBase):
+class PlayerUpdate(BaseModel):
     """Schema for updating player information"""
     score: Optional[int] = None
+    username: Optional[str] = None
+    disabled: Optional[bool] = None
 
 
 class PlayerOut(PlayerBase):
@@ -30,6 +33,11 @@ class PlayerOut(PlayerBase):
 
     class Config:
         from_attributes = True
+
+
+class PlayerInDB(PlayerBase):
+    """Player schema for database operations"""
+    password_hash: str
 
 # Question Schemas
 

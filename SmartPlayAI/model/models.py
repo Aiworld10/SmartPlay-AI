@@ -13,6 +13,8 @@ class Player(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), unique=True, index=True, nullable=False)
+    # Optional password field
+    password_hash = Column(String(128), nullable=True)
     score = Column(Integer, default=0)
     created_at = Column(DateTime, default=func.now())
 
