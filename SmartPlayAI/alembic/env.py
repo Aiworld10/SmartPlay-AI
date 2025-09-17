@@ -1,3 +1,4 @@
+import os
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy import engine_from_config
@@ -14,8 +15,8 @@ load_dotenv()
 # access to the values within the .ini file in use.
 config = context.config
 ENCODED_PASSWORD = quote_plus(RAW_PASSWORD).replace("%", "%%")
-sync_url = f"postgresql+psycopg2://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
+# sync_url = f"postgresql+psycopg2://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+sync_url = os.getenv("DATABASE_ALEMBIC_URL")
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.

@@ -14,13 +14,14 @@ load_dotenv()
 DB_USER = os.getenv("DB_USER")
 # URL encode special characters in password
 RAW_PASSWORD = os.getenv("DB_PASSWORD", "")
-DB_PASSWORD = quote_plus(os.getenv("DB_PASSWORD", ""))
+DB_PASSWORD = quote_plus(RAW_PASSWORD)
 DB_NAME = os.getenv("DB_NAME")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
 
 # Construct the full database URL for the asyncpg driver
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL")
+# DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 # Create the async engine with pool pre-ping to handle stale connections
 engine = create_async_engine(
     DATABASE_URL,

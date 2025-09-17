@@ -1,4 +1,5 @@
 
+import os
 from router.authenticate import _get_user_from_token
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Request, Form, Depends
@@ -147,4 +148,17 @@ async def index(request: Request,
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8080, log_level="info")
+
+    environment = os.getenv("RAILWAY_ENVIRONMENT_NAME", "development")
+
+    if environment == "production":
+        # Production-specific config here
+        # e.g., enable some monitoring, logging, feature toggles
+        pass
+    else:
+        # Local or staging-specific config here
+        pass
+
+    port = int(os.getenv("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+
