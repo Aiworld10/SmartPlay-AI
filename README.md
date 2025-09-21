@@ -48,6 +48,7 @@ SERVEO_HOST=
 ```
 
 Replace placeholders with your actual credentials.
+SERVEO_host please follow the fetchLLMresponse.py for instruction, need ollama installed
 
 ### 4. Run the Application
 
@@ -102,6 +103,13 @@ smartplay-ai/
 ## testing
 
 1. uv run pytest -v
+
+## docker
+
+# please know that .env is not listed and recommend to add using third cloud server provider for environment variable or create your own
+
+1. docker build -t smartplayai .
+2. docker run -p 8080:8080 smartplayai
 
 ## License
 
