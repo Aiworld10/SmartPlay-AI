@@ -2,7 +2,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, PrimaryKeyConstraint, func
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 
 Base = declarative_base()

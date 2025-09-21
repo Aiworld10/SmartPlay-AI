@@ -14,9 +14,18 @@ load_dotenv()
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-ENCODED_PASSWORD = quote_plus(RAW_PASSWORD).replace("%", "%%")
-# sync_url = f"postgresql+psycopg2://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-sync_url = os.getenv("DATABASE_ALEMBIC_URL")
+
+# Get the async database URL and convert it to sync for Alembic
+async_url = os.getenv("DATABASE_PUBLIC_URL")
+if async_url:
+    # Convert from postgresql+asyncpg:// to postgresql+psycopg2:// for Alembic
+    sync_url = async_url.replace(
+        "postgresql+asyncpg://", "postgresql+psycopg2://")
+else:
+    # Fallback to constructing URL from individual components
+    ENCODED_PASSWORD = quote_plus(RAW_PASSWORD).replace("%", "%%")
+    sync_url = f"postgresql+psycopg2://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.

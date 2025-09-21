@@ -131,8 +131,7 @@ async def generate_question_form(request: Request):
     selected_theme = random.choice(THEMES)
     generated_question = generate_question(selected_theme)
 
-    return templates.TemplateResponse("form.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "form.html", {
         "question": generated_question,
         "theme": selected_theme
     })
@@ -143,7 +142,7 @@ async def index(request: Request,
                 current_user: Optional[schemas.PlayerBase] = Depends(optional_current_user)):
     """Render the main index page."""
     # print("Current user:", current_user)
-    return templates.TemplateResponse("index.html", {"request": request, "user": current_user})
+    return templates.TemplateResponse(request, "index.html", {"user": current_user})
 
 
 if __name__ == "__main__":

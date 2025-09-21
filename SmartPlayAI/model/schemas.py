@@ -1,6 +1,6 @@
 # This allow us to config the database, how data is validated and serialzied for API requests and response using pydantics
 from datetime import datetime, timezone
-from pydantic import BaseModel, AwareDatetime, Field
+from pydantic import BaseModel, AwareDatetime, Field, ConfigDict
 from typing import List, Optional
 
 # Player Schemas
@@ -30,9 +30,7 @@ class PlayerUpdate(BaseModel):
 
 class PlayerOut(PlayerBase):
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PlayerInDB(PlayerBase):
@@ -54,17 +52,13 @@ class QuestionCreate(QuestionBase):
 
 class QuestionOut(QuestionBase):
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ListQuestionsOut(BaseModel):
     questions: List[QuestionOut]
     username: str
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Response Schemas
 
@@ -84,8 +78,7 @@ class ResponseCreate(ResponseBase):
 
 
 class ResponseOut(ResponseBase):
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Helper schemas

@@ -134,9 +134,9 @@ async def login_for_access_token(
     if not user:
         # Return the index page with error message for HTMX
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "user": None,
                 "error_message": "Incorrect username or password. Please try again."
             }
@@ -150,9 +150,9 @@ async def login_for_access_token(
 
     # Create response with redirect header for HTMX
     response = templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "user": user,
             "success_message": f"Welcome back, {user.name}!"
         }
@@ -173,9 +173,9 @@ async def login_for_access_token(
 @router.post("/logout", response_class=HTMLResponse)
 async def logout(request: Request):
     response = templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "user": None,
             "success_message": "You have been logged out successfully."
         }
@@ -203,9 +203,9 @@ async def register(
     # Validate passwords match
     if password1 != password2:
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "user": None,
                 "error_message": "Passwords do not match. Please try again."
             }
@@ -214,9 +214,9 @@ async def register(
     # Validate password length
     if len(password1) < 6:
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "user": None,
                 "error_message": "Password must be at least 6 characters long."
             }
@@ -225,9 +225,9 @@ async def register(
     # Validate username length
     if len(username) < 3:
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "user": None,
                 "error_message": "Username must be at least 3 characters long."
             }
@@ -241,18 +241,18 @@ async def register(
         )
         if not player:
             return templates.TemplateResponse(
+                request,
                 "index.html",
                 {
-                    "request": request,
                     "user": None,
                     "error_message": "Registration failed. Username might already exist."
                 }
             )
 
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "user": None,
                 "success_message": f"Account created successfully for {username}! You can now log in."
             }
@@ -260,9 +260,9 @@ async def register(
     except Exception as e:
         print(f"Registration error: {e}")
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "user": None,
                 "error_message": "Registration failed. Username might already exist."
             }
@@ -276,9 +276,9 @@ async def theme_selection(
     db: AsyncSession = Depends(get_session),
 ):
     return templates.TemplateResponse(
+        request,
         "theme_selection.html",
         {
-            "request": request,
             "username": current_user.name,
             "user_score": current_user.score,
         },
