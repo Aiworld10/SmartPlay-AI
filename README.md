@@ -99,6 +99,10 @@ smartplay-ai/
    ```
 5. Submit a pull request
 
+## testing
+
+1. uv run pytest -v
+
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
