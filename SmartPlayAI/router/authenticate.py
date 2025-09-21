@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, ValidationError, model_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from model import crud, schemas
@@ -20,7 +20,7 @@ from model.database import get_session
 # Setup
 # ---------------------------
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY","hgaghagahgagahgwfagahgawf")
+SECRET_KEY = os.getenv("SECRET_KEY", "hgaghagahgagahgwfagahgawf")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
@@ -124,15 +124,23 @@ async def get_current_user_from_cookie(
 # ---------------------------
 # Routes
 # ---------------------------
-@router.post("/login")
+@router.post("/login", response_class=HTMLResponse)
 async def login_for_access_token(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_session),
 ):
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
+        # Return the index page with error message for HTMX
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "user": None,
+                "error_message": "Incorrect username or password. Please try again."
+            }
+        )
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -140,7 +148,15 @@ async def login_for_access_token(
         expires_delta=access_token_expires,
     )
 
-    response = RedirectResponse(url="/auth/theme-selection", status_code=302)
+    # Create response with redirect header for HTMX
+    response = templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "user": user,
+            "success_message": f"Welcome back, {user.name}!"
+        }
+    )
     response.set_cookie(
         key="access_token",
         value=access_token,
@@ -149,12 +165,21 @@ async def login_for_access_token(
         samesite="Lax",
         secure=False,   # Set to True in production with HTTPS
     )
+    # Add HX-Redirect header to redirect after successful login
+    response.headers["HX-Redirect"] = "/auth/theme-selection"
     return response
 
 
-@router.post("/logout")
-async def logout():
-    response = RedirectResponse(url="/", status_code=303)
+@router.post("/logout", response_class=HTMLResponse)
+async def logout(request: Request):
+    response = templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "user": None,
+            "success_message": "You have been logged out successfully."
+        }
+    )
     response.delete_cookie(
         key="access_token",
         httponly=True,
@@ -168,21 +193,80 @@ async def logout():
 @router.post("/register", response_class=HTMLResponse)
 async def register(
     request: Request,
-    form_data: RegisterForm = Depends(RegisterForm.as_form),
+    username: str = Form(...),
+    password1: str = Form(...),
+    password2: str = Form(...),
     db: AsyncSession = Depends(get_session),
 ):
-    print(f"Registering user: {form_data.username}")
+    print(f"Registering user: {username}")
 
-    player = await crud.create_player(
-        db,
-        schemas.PlayerCreate(name=form_data.username),
-        form_data.password1,
-    )
-    if not player:
-        raise HTTPException(
-            status_code=400, detail="Player registration failed")
+    # Validate passwords match
+    if password1 != password2:
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "user": None,
+                "error_message": "Passwords do not match. Please try again."
+            }
+        )
 
-    return RedirectResponse(url="/", status_code=303)
+    # Validate password length
+    if len(password1) < 6:
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "user": None,
+                "error_message": "Password must be at least 6 characters long."
+            }
+        )
+
+    # Validate username length
+    if len(username) < 3:
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "user": None,
+                "error_message": "Username must be at least 3 characters long."
+            }
+        )
+
+    try:
+        player = await crud.create_player(
+            db,
+            schemas.PlayerCreate(name=username),
+            password1,
+        )
+        if not player:
+            return templates.TemplateResponse(
+                "index.html",
+                {
+                    "request": request,
+                    "user": None,
+                    "error_message": "Registration failed. Username might already exist."
+                }
+            )
+
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "user": None,
+                "success_message": f"Account created successfully for {username}! You can now log in."
+            }
+        )
+    except Exception as e:
+        print(f"Registration error: {e}")
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "user": None,
+                "error_message": "Registration failed. Username might already exist."
+            }
+        )
 
 
 @router.get("/theme-selection", response_class=HTMLResponse)
