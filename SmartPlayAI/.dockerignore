@@ -1,0 +1,15 @@
+# Exclude sensitive and unnecessary files
+.env
+.env.*
+*.log
+.git
+.gitignore
+README.md
+__pycache__/
+.pytest_cache/
+tests/
+.vscode/
+.idea/
+*.pyc
+.DS_Store
+Thumbs.db

@@ -1,10 +1,9 @@
 import pytest
-import pytest_asyncio
 import uuid
 from sqlalchemy import text
 
-from model.models import Player, Question
-from model.crud import create_player, get_player_by_name, store_question, load_questions_from_json
+from fetchLLMresponse import evaluate_player_response
+from model.crud import create_player, get_player_by_name, get_random_questions_by_theme, store_question, load_questions_from_json
 from model.schemas import PlayerCreate, QuestionCreate
 
 
@@ -23,19 +22,19 @@ async def test_create_player(db_session):
 @pytest.mark.asyncio
 async def test_get_player_by_name(db_session):
     """Test retrieving a player by name."""
-    unique_username = f"gettest_{uuid.uuid4().hex[:8]}"
+    username = f"gettest_{uuid.uuid4().hex[:8]}"
 
     # Create a player
-    player_data = PlayerCreate(name=unique_username)
+    player_data = PlayerCreate(name=username)
     created_player = await create_player(db_session, player_data, "testpassword")
     await db_session.commit()
 
     # Retrieve the player
-    retrieved_player = await get_player_by_name(db_session, unique_username)
+    fetched_player = await get_player_by_name(db_session, username)
 
-    assert retrieved_player is not None
-    assert retrieved_player.name == unique_username
-    assert retrieved_player.id == created_player.id
+    assert fetched_player is not None
+    assert fetched_player.name == username
+    assert fetched_player.id == created_player.id
 
 
 @pytest.mark.asyncio
@@ -52,12 +51,12 @@ async def test_create_questions_bulk(db_session):
     """Test bulk creation of questions."""
     questions_data = [
         QuestionCreate(
-            theme="Adventure",
+            theme="survival",
             question_text="You find a mysterious cave. What do you do?"
         ),
         QuestionCreate(
-            theme="Mystery",
-            question_text="A witness gives conflicting testimony. How do you proceed?"
+            theme="moral",
+            question_text="A stranger asks for help. Do you assist them?"
         )
     ]
 
@@ -66,11 +65,11 @@ async def test_create_questions_bulk(db_session):
 
     # Verify questions were created
     assert len(created_questions) == 2
-    assert created_questions[0].theme == "Adventure"
-    assert created_questions[1].theme == "Mystery"
+    assert created_questions[0].theme == "survival"
+    assert created_questions[1].theme == "moral"
 
     # Verify in database
-    result = await db_session.execute(text("SELECT COUNT(*) FROM questions WHERE theme IN ('Adventure', 'Mystery')"))
+    result = await db_session.execute(text("SELECT COUNT(*) FROM questions WHERE theme IN ('survival', 'moral')"))
     count = result.scalar()
     assert count == 2
 
@@ -82,3 +81,89 @@ async def test_database_isolation(db_session):
     result = await db_session.execute(text("SELECT COUNT(*) FROM players"))
     count = result.scalar()
     assert count == 0  # Database should be clean for each test
+
+
+@pytest.mark.asyncio
+async def test_get_random_questions_by_theme(db_session):
+    """Test retrieving random questions by theme."""
+    theme = "survival"
+    questions_data = [
+        QuestionCreate(theme=theme, question_text=f"Survival question {i}") for i in range(10)
+    ]
+
+    # Insert questions
+    await load_questions_from_json(db_session, questions_data)
+
+    # Retrieve random questions
+    random_questions = await get_random_questions_by_theme(db_session, theme, limit=5)
+
+    assert len(random_questions) == 5
+    for question in random_questions:
+        assert question.theme == theme
+
+
+@pytest.mark.asyncio
+async def test_evaluate_response_with_verdict(db_session):
+    """Test evaluate the resposne from LLM with a verdict and score"""
+    question_data = QuestionCreate(
+        theme="moral",
+        question_text="You find a wallet with $500 cash and no ID. What do you do?"
+    )
+
+    # Store the question
+    stored_question = await store_question(db_session, question_data)
+
+    # Create a response from user to pass to LLM using fetchLLMResponse.py
+    user_response = "I would take the cash and leave the wallet where I found it."
+    llm_response = evaluate_player_response(
+        user_response, stored_question.question_text)
+    verdict = llm_response[1]['verdict']
+    score = llm_response[1]["score"]
+    assert verdict in ["GOOD", "BAD"]
+    assert score in [0, 1, 2, 3, 4, 5]
+
+
+@pytest.mark.asyncio
+async def test_update_player_score(db_session):
+    """Test updating a player's score."""
+    username = f"scoretest_{uuid.uuid4().hex[:8]}"
+
+    # Create a player
+    player_data = PlayerCreate(name=username)
+    player = await create_player(db_session, player_data, "testpassword")
+    await db_session.commit()
+
+    # Update the player's score
+    new_score = 10
+    player.score = new_score
+    db_session.add(player)
+    await db_session.commit()
+    await db_session.refresh(player)
+
+    # Fetch the player again to verify the score update
+    updated_player = await get_player_by_name(db_session, username)
+
+    assert updated_player.score == new_score
+
+
+@pytest.mark.asyncio
+async def test_get_leaderboard(db_session):
+    """Test retrieving the leaderboard."""
+    # Create multiple players with different scores
+    players_data = [
+        PlayerCreate(name=f"leader_{i}") for i in range(5)
+    ]
+    for i, pdata in enumerate(players_data):
+        player = await create_player(db_session, pdata, "testpassword")
+        player.score = i * 10  # Assign scores 0, 10, 20, 30, 40
+        db_session.add(player)
+    await db_session.commit()
+
+    # Retrieve top 5 players by score
+    result = await db_session.execute(
+        text("SELECT * FROM players ORDER BY score DESC LIMIT 5")
+    )
+    top_players = result.fetchall()
+
+    assert len(top_players) == 5
+    assert top_players[0].score >= top_players[1].score >= top_players[2].score >= top_players[3].score >= top_players[4].score

@@ -1,5 +1,7 @@
-import pytest
-import uuid
+# test_app.py
+# Tests for user registration and login functionality using FastAPI's TestClient
+import uuid  # for generating unique usernames
+# use the synchronous TestClient for testing FastAPI endpoints such as get, post
 
 
 def test_register_user(client):
@@ -135,3 +137,10 @@ def test_register_duplicate_username(client):
     )
     assert response2.status_code == 200
     assert "Registration failed. Username might already exist" in response2.text
+
+
+def test_get_theme_selection_unauthenticated(client):
+    """Test accessing theme selection page without authentication."""
+    response = client.get("/auth/theme-selection")
+    assert response.status_code == 401  # Unauthorized
+    # Check that the response contains login prompt

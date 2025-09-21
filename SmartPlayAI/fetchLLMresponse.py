@@ -1,11 +1,17 @@
 import requests
 import json
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 load_dotenv()
 url = os.getenv("SERVEO_HOST")
 headers = {"Content-Type": "application/json"}
 
+
+# run serveo_host to run the server and get ready for requests
+# SET OLLAMA_HOST=0.0.0.0
+# ollama serve --host
+# ssh -R 80:localhost:11434 serveo.net
+# pass the url to SERVEO_HOST env variable
 
 def evaluate_player_response(question: str, answer: str):
     data = {
@@ -24,10 +30,11 @@ def evaluate_player_response(question: str, answer: str):
             {"role": "user", "content": question},
             {"role": "user", "content": f"Player Response: {answer}"}
         ],
+        "temperature": 0.2,
         "stream": False,
         "think": False,
     }
-
+    # make  request to serveo api
     response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if not response.ok:
