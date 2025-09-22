@@ -31,9 +31,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
+secure = True if os.getenv("ENV") == "production" else False
+
 # ---------------------------
 # Schemas
 # ---------------------------
+
+
 class TokenData(BaseModel):
     username: str | None = None
 
@@ -163,7 +167,7 @@ async def login_for_access_token(
         httponly=True,
         max_age=int(access_token_expires.total_seconds()),
         samesite="Lax",
-        secure=False,   # Set to True in production with HTTPS
+        secure=secure,   # Set to True in production with HTTPS
     )
     # Add HX-Redirect header to redirect after successful login
     response.headers["HX-Redirect"] = "/auth/theme-selection"
@@ -184,7 +188,7 @@ async def logout(request: Request):
         key="access_token",
         httponly=True,
         samesite="Lax",
-        secure=False,  # match your cookie set flags
+        secure=secure,  # match your cookie set flags
         path="/",
     )
     return response
