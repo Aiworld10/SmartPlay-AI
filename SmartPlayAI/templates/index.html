@@ -69,9 +69,8 @@
         {% endif %}
         <!-- Create New Player Trigger -->
         {% if user %}
-        <a href="{{ url_for('theme_selection') }}" class="btn btn-primary w-100 mb-2">Go to Theme Selection</a>
-        <button hx-post="{{ url_for('logout') }}" hx-target="body" hx-swap="innerHTML"
-            class="btn btn-secondary w-100 mb-2">
+        <a href="/auth/theme-selection" class="btn btn-primary w-100 mb-2">Go to Theme Selection</a>
+        <button hx-post="/auth/logout" hx-target="body" hx-swap="innerHTML" class="btn btn-secondary w-100 mb-2">
             Log Out
         </button>
 
