@@ -151,8 +151,11 @@ async def login_for_access_token(
         )
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # access token has both username and user id
     access_token = create_access_token(
-        {"sub": user.name, "id": user.id},
+        {
+            "sub": user.name, "id": user.id
+        },
         expires_delta=access_token_expires,
     )
 
@@ -288,6 +291,7 @@ async def theme_selection(
         "theme_selection.html",
         {
             "username": current_user.name,
+            "user_id": current_user.id,
             "user_score": current_user.score,
         },
     )

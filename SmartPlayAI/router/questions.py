@@ -53,10 +53,10 @@ async def get_question(question_id: int, db: AsyncSession = Depends(get_session)
 @router.get("/random", response_model=schemas.ListQuestionsOut)
 async def get_random_questions(
         theme: str = Query(...),
-        username: str = Query(...),
+        user_id: int = Query(...),
         db: AsyncSession = Depends(get_session)):
 
-    db_questions = await crud.get_random_questions_by_theme(db, theme)
+    db_questions = await crud.get_random_questions_by_theme(db, theme, player_id=user_id)
     if not db_questions:
         raise HTTPException(status_code=404, detail="No questions found")
-    return schemas.ListQuestionsOut(questions=db_questions, username=username)
+    return schemas.ListQuestionsOut(questions=db_questions, user_id=user_id)

@@ -46,7 +46,7 @@
                             <h5 class="card-title">Survival</h5>
                             <p class="card-text">Test your survival instincts in extreme situations</p>
                             <button class="btn btn-primary"
-                                hx-get="/questions/random?theme=survival&username={{username}}"
+                                hx-get="/questions/random?theme=survival&user_id={{user_id}}"
                                 hx-target="#theme-selection-result" hx-swap="innerHTML">Select</button>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Work</h5>
                             <p class="card-text">Handle professional challenges and workplace dilemmas</p>
-                            <button class="btn btn-primary" hx-get="/questions/random?theme=work&username={{username}}"
+                            <button class="btn btn-primary" hx-get="/questions/random?theme=work&user_id={{user_id}}"
                                 hx-target="#theme-selection-result" hx-swap="innerHTML">Select</button>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                             <h5 class="card-title">Interview</h5>
                             <p class="card-text">Handle interview scenarios and questions</p>
                             <button class="btn btn-primary"
-                                hx-get="/questions/random?theme=interview&username={{username}}"
+                                hx-get="/questions/random?theme=interview&user_id={{user_id}}"
                                 hx-target="#theme-selection-result" hx-swap="innerHTML">Select</button>
                         </div>
                     </div>

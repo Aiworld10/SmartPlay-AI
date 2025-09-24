@@ -57,7 +57,7 @@ class QuestionOut(QuestionBase):
 
 class ListQuestionsOut(BaseModel):
     questions: List[QuestionOut]
-    username: str
+    user_id: int
     model_config = ConfigDict(from_attributes=True)
 
 # Response Schemas

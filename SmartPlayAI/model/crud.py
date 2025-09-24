@@ -1,6 +1,7 @@
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete
 from . import models, schemas
 from typing import List
 from passlib.context import CryptContext
@@ -76,13 +77,36 @@ async def get_question_by_id(db: AsyncSession, question_id: int):
     return await db.get(models.Question, question_id)
 
 
-async def get_random_questions_by_theme(db: AsyncSession, theme: str, limit: int = 5):
-    result = await db.execute(
+async def get_random_questions_by_theme(db: AsyncSession, theme: str, limit:
+                                        int = 5, player_id: int = None):
+    """
+    Retrieve a list of random Question instances filtered by theme.
+    player will only see those question once after they submit an answer.
+    they will have the option to ignore that and go to next
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy database session.
+        theme (str): Theme to filter questions by.
+        limit (int): Maximum number of questions to retrieve.
+    """
+    stmt = (
         select(models.Question)
-        .where(models.Question.theme == theme)
+        .where(
+            models.Question.theme == theme,
+            # NOT EXISTS subquery to exclude questions already answered by the player ~ symbol is NOT
+            ~select(1)
+            .where(
+                models.Response.player_id == player_id,
+                models.Response.question_id == models.Question.id,
+            )
+            .select_from(models.Response)
+            .exists()
+            if player_id is not None else True  # no filter if no player_id
+        )
         .order_by(func.random())
         .limit(limit)
     )
+    result = await db.execute(stmt)
     return result.scalars().all()
 
 
@@ -138,7 +162,6 @@ async def delete_all_questions(db: AsyncSession) -> int:
     Returns:
         int: The number of questions deleted.
     """
-    from sqlalchemy import delete
 
     # Execute delete statement for all questions
     result = await db.execute(delete(models.Question))
@@ -190,3 +213,24 @@ async def get_responses_by_player(db: AsyncSession, player_id: int):
         select(models.Response).where(models.Response.player_id == player_id)
     )
     return result.scalars().all()
+
+
+async def reset_user_responses(db: AsyncSession, player_id: int):
+    """
+    Delete all Response instances associated with a specific player.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy database session.
+        player_id (int): Unique identifier of the Player.
+
+    Returns:
+        int: The number of responses deleted.
+    """
+    # Execute delete statement for all responses by the player
+    result = await db.execute(
+        delete(models.Response).where(models.Response.player_id == player_id)
+    )
+    deleted_count = result.rowcount
+    await db.commit()
+
+    return deleted_count

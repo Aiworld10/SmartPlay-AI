@@ -1,10 +1,12 @@
+
 import pytest
 import uuid
 from sqlalchemy import text
 
 from fetchLLMresponse import evaluate_player_response
-from model.crud import create_player, get_player_by_name, get_random_questions_by_theme, store_question, load_questions_from_json
+from model.crud import create_player, get_player_by_name, get_random_questions_by_theme, store_question, load_questions_from_json, store_response, reset_user_responses
 from model.schemas import PlayerCreate, QuestionCreate
+from model import schemas
 
 
 @pytest.mark.asyncio
@@ -167,3 +169,58 @@ async def test_get_leaderboard(db_session):
 
     assert len(top_players) == 5
     assert top_players[0].score >= top_players[1].score >= top_players[2].score >= top_players[3].score >= top_players[4].score
+
+
+@pytest.mark.asyncio
+async def test_exclude_answered(db_session):
+    """Test retrieving random questions by theme excluding those already answered by the player."""
+    theme = "survival"
+    player_id = 1  # Simulate a player with ID 1
+
+    # Create questions
+    questions_data = [
+        QuestionCreate(theme=theme, question_text=f"Survival question {i}") for i in range(10)
+    ]
+    created_questions = await load_questions_from_json(db_session, questions_data)
+
+    # use store_response() to simulate that player has answered first 5 questions
+    for question in created_questions:
+        response = schemas.ResponseCreate(
+            question_id=question.id, player_id=player_id, response_text="Sample answer", score=3)
+        await store_response(db_session, response)
+    await db_session.commit()
+    # Retrieve random questions excluding those already answered
+    random_questions = await get_random_questions_by_theme(db_session, theme, limit=5, player_id=player_id)
+    assert len(random_questions) == 0  # All questions have been answered
+
+
+@pytest.mark.asyncio
+async def test_reset_answered_questions(db_session):
+    """Test resetting answered questions for a player."""
+    theme = "theme"
+    player_id = 1  # Simulate a player with ID 1
+
+    # Create questions
+    questions_data = [
+        QuestionCreate(theme=theme, question_text=f"Theme question {i}") for i in range(5)
+    ]
+    created_questions = await load_questions_from_json(db_session, questions_data)
+
+    # Simulate that player has answered all questions
+    for question in created_questions:
+        response = schemas.ResponseCreate(
+            question_id=question.id, player_id=player_id, response_text="Sample answer", score=3)
+        await store_response(db_session, response)
+    await db_session.commit()
+
+    # Verify no questions are returned when fetching random questions
+    random_questions_before_reset = await get_random_questions_by_theme(db_session, theme, limit=5, player_id=player_id)
+    assert len(random_questions_before_reset) == 0
+
+    # Reset answered questions for the player
+    await reset_user_responses(db_session, player_id)
+    await db_session.commit()
+    # Verify questions are now available after reset
+    random_questions_after_reset = await get_random_questions_by_theme(db_session, theme, limit=5, player_id=player_id)
+    # Should retrieve questions now
+    assert len(random_questions_after_reset) > 0
