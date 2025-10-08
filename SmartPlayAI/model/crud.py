@@ -234,3 +234,61 @@ async def reset_user_responses(db: AsyncSession, player_id: int):
     await db.commit()
 
     return deleted_count
+
+
+async def get_leaderboard(db: AsyncSession, theme: str = None, limit: int = 10):
+    """
+    Get leaderboard data, optionally filtered by theme.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy database session.
+        theme (str, optional): Theme to filter by.
+        limit (int): Maximum number of players to return.
+
+    Returns:
+        list: List of player leaderboard data.
+    """
+    # Base query joining players with their responses
+    query = (
+        select(
+            models.Player.id,
+            models.Player.name,
+            func.coalesce(func.sum(models.Response.score), 0).label('score'),
+            func.count(models.Response.player_id).label('games_played'),
+            func.coalesce(func.avg(models.Response.score), 0).label('average_score')
+        )
+        .select_from(models.Player)
+        .outerjoin(models.Response, models.Player.id == models.Response.player_id)
+    )
+
+    # If theme is specified, join with questions to filter by theme
+    if theme:
+        query = (
+            query
+            .outerjoin(models.Question, models.Response.question_id == models.Question.id)
+            .where(models.Question.theme == theme)
+        )
+
+    # Group by player and order by score descending
+    query = (
+        query
+        .group_by(models.Player.id, models.Player.name)
+        .order_by(func.coalesce(func.sum(models.Response.score), 0).desc())
+        .limit(limit)
+    )
+
+    result = await db.execute(query)
+    rows = result.fetchall()
+
+    # Convert to list of dictionaries
+    leaderboard = []
+    for row in rows:
+        leaderboard.append({
+            'id': row.id,
+            'name': row.name,
+            'score': int(row.score),
+            'games_played': int(row.games_played),
+            'average_score': float(row.average_score)
+        })
+
+    return leaderboard

@@ -1,33 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>SmartPlay AI - Response Result</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>SmartPlayAI - Result</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            background: #f4f6fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-container {
+            max-width: 700px;
+            width: 100%;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .verdict-badge {
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .verdict-good {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .verdict-bad {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #007bff;
+            margin: 20px 0;
+        }
+
+        .evaluation-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid #007bff;
+        }
+
+        .evaluation-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #495057;
+            text-align: left;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-next {
+            flex: 1;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1>SmartPlay AI - Response Submitted</h1>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Player: {{ result.player_name }}</h5>
-                <div class="mb-3">
-                    <strong>Your Response:</strong>
-                    <p class="border p-3 bg-light">{{ result.response }}</p>
-                </div>
-                <div class="mb-3">
-                    <strong>AI Feedback:</strong>
-                    <p class="text-info">{{ result.feedback }}</p>
-                </div>
-                <div class="mb-3">
-                    <strong>Score:</strong>
-                    <span class="badge bg-primary">{{ result.score }}</span>
-                </div>
-                <a href="/" class="btn btn-primary">Try Another Scenario</a>
+    <div class="result-container fade-in">
+        <div class="result-header">
+            <h2 class="text-primary mb-3">Your Result</h2>
+
+            <div class="verdict-badge" id="verdict-badge">GOOD</div>
+
+            <div class="score-display">
+                <span id="score-value">0</span> / 5
+            </div>
+
+            <div class="progress-info">
+                <div>Question: <span id="current-question">1</span> / <span id="total-questions">5</span></div>
+                <div>Total Score: <span id="total-score">0</span></div>
             </div>
         </div>
+
+        <div class="evaluation-box">
+            <h5 class="mb-3 text-primary">AI Evaluation</h5>
+            <div class="evaluation-text" id="evaluation-text">
+                Loading evaluation...
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button type="button" class="btn btn-outline-secondary" onclick="goHome()">
+                <i class="fas fa-home me-2"></i>Home
+            </button>
+            <button type="button" class="btn btn-primary btn-next" id="next-btn">
+                <i class="fas fa-arrow-right me-2"></i>Next Question
+            </button>
+        </div>
     </div>
+
+    <script>
+        // Load result data from localStorage
+        const resultData = JSON.parse(localStorage.getItem('resultData') || '{}');
+        const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
+
+        if (!resultData.evaluation) {
+            // Redirect if no data found
+            window.location.href = '/auth/theme-selection';
+        }
+
+        // Display result data
+        document.getElementById('evaluation-text').textContent = resultData.evaluation;
+        document.getElementById('score-value').textContent = resultData.score || 0;
+        document.getElementById('current-question').textContent = (resultData.currentIndex + 1) || 1;
+        document.getElementById('total-questions').textContent = resultData.totalQuestions || 5;
+        document.getElementById('total-score').textContent = resultData.totalScore || 0;
+
+        // Update verdict badge
+        const verdictBadge = document.getElementById('verdict-badge');
+        const verdict = resultData.verdict || 'EVALUATED';
+        verdictBadge.textContent = verdict;
+
+        if (verdict === 'GOOD' || (resultData.score && resultData.score >= 5)) {
+            verdictBadge.className = 'verdict-badge verdict-good';
+        } else {
+            verdictBadge.className = 'verdict-badge verdict-bad';
+        }
+
+        // Update game state score
+        gameState.totalScore = resultData.totalScore || 0;
+        gameState.currentIndex = (resultData.currentIndex || 0) + 1;
+
+        // Handle next question button
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (gameState.currentIndex >= gameState.questions.length) {
+                // Game complete - go to leaderboard
+                window.location.href = `/questions/leaderboard?theme=${resultData.theme}`;
+            } else {
+                // Load next question
+                localStorage.setItem('gameState', JSON.stringify(gameState));
+                loadNextQuestion();
+            }
+        });
+
+        function loadNextQuestion() {
+            const question = gameState.questions[gameState.currentIndex];
+
+            // Create form data for next question page
+            const nextQuestionData = {
+                questions: gameState.questions,
+                currentIndex: gameState.currentIndex,
+                totalScore: gameState.totalScore,
+                userId: gameState.userId,
+                theme: gameState.theme
+            };
+
+            localStorage.setItem('nextQuestionData', JSON.stringify(nextQuestionData));
+            window.location.href = `/questions/next`;
+        }
+
+        function goHome() {
+            localStorage.clear();
+            window.location.href = '/auth/theme-selection';
+        }
+
+        // Update button text if last question
+        if (gameState.currentIndex >= gameState.questions.length) {
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerHTML = '<i class="fas fa-trophy me-2"></i>View Leaderboard';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

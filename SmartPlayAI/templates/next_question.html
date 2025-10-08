@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SmartPlayAI - Question Game</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            background: #f4f6fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-container {
+            max-width: 700px;
+            width: 100%;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .timer.warning {
+            color: #ffc107;
+        }
+
+        .timer.danger {
+            color: #dc3545;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+
+        .answer-textarea {
+            width: 100%;
+            min-height: 150px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .answer-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .word-counter {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .word-counter.exceeded {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-submit {
+            flex: 1;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container fade-in">
+        <div class="game-header">
+            <h2 class="text-primary mb-2">SmartPlayAI Game</h2>
+            <p class="text-muted">Answer the questions to the best of your ability</p>
+        </div>
+
+        <div class="progress-info">
+            <div>Question: <span id="current-question">1</span> / <span id="total-questions">5</span></div>
+            <div class="timer" id="timer">60s</div>
+            <div>Score: <span id="current-score">0</span></div>
+        </div>
+
+        <div class="progress mb-4">
+            <div class="progress-bar bg-primary" role="progressbar" id="progress-bar" style="width: 20%"></div>
+        </div>
+
+        <div id="question-container">
+            <div class="question-card">
+                <div class="question-text" id="question-text">Loading question...</div>
+
+                <form id="answer-form">
+                    <textarea
+                        class="answer-textarea"
+                        id="answer-input"
+                        placeholder="Type your answer here... (max 150 words)"
+                        maxlength="1500"
+                    ></textarea>
+                    <div class="word-counter" id="word-counter">0 / 150 words</div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-outline-secondary" id="skip-btn">
+                            <i class="fas fa-forward me-2"></i>Skip
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Answer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load game state from localStorage
+        const nextQuestionData = JSON.parse(localStorage.getItem('nextQuestionData') || '{}');
+        const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
+
+        if (!nextQuestionData.questions || !gameState.questions) {
+            window.location.href = '/auth/theme-selection';
+        }
+
+        // Use the game state
+        const currentQuestion = gameState.questions[gameState.currentIndex];
+
+        // DOM elements
+        const questionText = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const wordCounter = document.getElementById('word-counter');
+        const timerDisplay = document.getElementById('timer');
+        const currentQuestionDisplay = document.getElementById('current-question');
+        const totalQuestionsDisplay = document.getElementById('total-questions');
+        const currentScoreDisplay = document.getElementById('current-score');
+        const progressBar = document.getElementById('progress-bar');
+        const answerForm = document.getElementById('answer-form');
+        const skipBtn = document.getElementById('skip-btn');
+
+        // Initialize display
+        questionText.textContent = currentQuestion.question_text;
+        currentQuestionDisplay.textContent = gameState.currentIndex + 1;
+        totalQuestionsDisplay.textContent = gameState.questions.length;
+        currentScoreDisplay.textContent = gameState.totalScore || 0;
+
+        const progress = ((gameState.currentIndex + 1) / gameState.questions.length) * 100;
+        progressBar.style.width = progress + '%';
+
+        let timeLeft = 60;
+        let timerId = null;
+
+        // Word counter
+        answerInput.addEventListener('input', () => {
+            const text = answerInput.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            wordCounter.textContent = words + ' / 150 words';
+
+            if (words > 150) {
+                wordCounter.classList.add('exceeded');
+            } else {
+                wordCounter.classList.remove('exceeded');
+            }
+        });
+
+        // Timer functions
+        function startTimer() {
+            timeLeft = 60;
+            updateTimer();
+            timerId = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    stopTimer();
+                    submitAnswer(true);
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = timeLeft + 's';
+            timerDisplay.classList.remove('warning', 'danger');
+
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('danger');
+            } else if (timeLeft <= 20) {
+                timerDisplay.classList.add('warning');
+            }
+        }
+
+        function stopTimer() {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+        }
+
+        // Submit answer
+        async function submitAnswer(autoSubmit = false) {
+            stopTimer();
+
+            const answer = answerInput.value.trim();
+            const words = answer ? answer.split(/\s+/).length : 0;
+
+            if (!answer && !autoSubmit) {
+                alert('Please provide an answer!');
+                startTimer();
+                return;
+            }
+
+            if (words > 150 && !autoSubmit) {
+                alert('Your answer exceeds 150 words. Please shorten it.');
+                startTimer();
+                return;
+            }
+
+            const finalAnswer = answer || "No answer provided (time expired)";
+
+            // Show loading state
+            answerForm.querySelector('button[type="submit"]').disabled = true;
+            answerForm.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Evaluating...';
+
+            try {
+                const formData = new FormData();
+                formData.append('question_id', currentQuestion.id);
+                formData.append('question_text', currentQuestion.question_text);
+                formData.append('response_text', finalAnswer);
+
+                const response = await fetch('/responses/answer', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Failed to submit');
+
+                const result = await response.json();
+
+                // Navigate to result page with data
+                const resultData = {
+                    evaluation: result.evaluation,
+                    verdict: result.verdict,
+                    score: result.score,
+                    currentIndex: gameState.currentIndex,
+                    totalQuestions: gameState.questions.length,
+                    totalScore: gameState.totalScore + result.score,
+                    theme: gameState.theme,
+                    userId: gameState.userId
+                };
+
+                localStorage.setItem('resultData', JSON.stringify(resultData));
+                window.location.href = '/questions/result';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting answer. Please try again.');
+                answerForm.querySelector('button[type="submit"]').disabled = false;
+                answerForm.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Answer';
+                startTimer();
+            }
+        }
+
+        // Skip question
+        skipBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to skip this question? You will receive 0 points.')) {
+                answerInput.value = 'Skipped';
+                submitAnswer(true);
+            }
+        });
+
+        // Form submit handler
+        answerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitAnswer();
+        });
+
+        // Start the timer
+        startTimer();
+        answerInput.focus();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -145,6 +145,21 @@ async def index(request: Request,
     return templates.TemplateResponse(request, "index.html", {"user": current_user})
 
 
+@app.get('/leaderboard')
+async def get_leaderboard(
+    theme: str = None,
+    db: AsyncSession = Depends(get_session)
+):
+    """Get leaderboard data, optionally filtered by theme."""
+    from model import crud as crud_ops
+    try:
+        leaderboard_data = await crud_ops.get_leaderboard(db, theme)
+        return leaderboard_data
+    except Exception as e:
+        print(f"Error fetching leaderboard: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard")
+
+
 if __name__ == "__main__":
     import uvicorn
 

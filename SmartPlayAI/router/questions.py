@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Request, Form, Depends, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 from model import schemas, crud
 from model.database import get_session
 from fastapi import Query
 
 router = APIRouter(prefix="/questions", tags=["questions"])
+templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/create", response_model=schemas.QuestionOut)
@@ -50,8 +53,9 @@ async def get_question(question_id: int, db: AsyncSession = Depends(get_session)
     return db_question
 
 
-@router.get("/random", response_model=schemas.ListQuestionsOut)
+@router.get("/random", response_class=HTMLResponse)
 async def get_random_questions(
+        request: Request,
         theme: str = Query(...),
         user_id: int = Query(...),
         db: AsyncSession = Depends(get_session)):
@@ -59,4 +63,52 @@ async def get_random_questions(
     db_questions = await crud.get_random_questions_by_theme(db, theme, player_id=user_id)
     if not db_questions:
         raise HTTPException(status_code=404, detail="No questions found")
+
+    # Convert SQLAlchemy objects to dictionaries for JSON serialization
+    questions_dict = []
+    for q in db_questions:
+        questions_dict.append({
+            "id": q.id,
+            "theme": q.theme,
+            "question_text": q.question_text
+        })
+
+    # Return the game interface with questions
+    return templates.TemplateResponse(
+        request,
+        "question_game.html",
+        {
+            "questions": questions_dict,
+            "user_id": user_id,
+            "theme": theme
+        }
+    )
+
+@router.get("/random/api", response_model=schemas.ListQuestionsOut)
+async def get_random_questions_api(
+        theme: str = Query(...),
+        user_id: int = Query(...),
+        db: AsyncSession = Depends(get_session)):
+    """API endpoint for getting random questions as JSON"""
+    db_questions = await crud.get_random_questions_by_theme(db, theme, player_id=user_id)
+    if not db_questions:
+        raise HTTPException(status_code=404, detail="No questions found")
     return schemas.ListQuestionsOut(questions=db_questions, user_id=user_id)
+
+
+@router.get("/result", response_class=HTMLResponse)
+async def get_result_page(request: Request):
+    """Display the result page after answering a question"""
+    return templates.TemplateResponse(request, "result.html", {})
+
+
+@router.get("/next", response_class=HTMLResponse)
+async def get_next_question_page(request: Request):
+    """Display the next question page"""
+    return templates.TemplateResponse(request, "next_question.html", {})
+
+
+@router.get("/leaderboard", response_class=HTMLResponse)
+async def get_leaderboard_page(request: Request):
+    """Display the leaderboard page"""
+    return templates.TemplateResponse(request, "leaderboard.html", {})
