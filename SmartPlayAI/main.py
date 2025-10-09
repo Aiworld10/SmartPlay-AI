@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from transformers import pipeline  # local dev
 from huggingface_hub import InferenceClient  # inference API for production
 import random
-
+from model import crud as crud_ops  # to not re import in the route
 from model import schemas
 from model.database import get_session
 from router import players, questions, responses, authenticate
@@ -151,13 +151,14 @@ async def get_leaderboard(
     db: AsyncSession = Depends(get_session)
 ):
     """Get leaderboard data, optionally filtered by theme."""
-    from model import crud as crud_ops
+
     try:
         leaderboard_data = await crud_ops.get_leaderboard(db, theme)
         return leaderboard_data
     except Exception as e:
         print(f"Error fetching leaderboard: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard")
+        raise HTTPException(
+            status_code=500, detail="Failed to fetch leaderboard")
 
 
 if __name__ == "__main__":

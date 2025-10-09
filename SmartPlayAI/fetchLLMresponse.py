@@ -21,19 +21,40 @@ def evaluate_player_response(question: str, answer: str):
                 "role": "system",
                 "content": (
                     "You are the game judge in SmartPlay AI. A player is given a scenario and responds under pressure. "
-                    "Write your evaluation as one concise paragraph (no more than 5 sentences) that explains the consequences "
+                    "Write your evaluation as one concise paragraph (no more than 7 sentences) explaining the consequences "
                     "of the player's choice and whether it shows clarity, adaptability, and emotional intelligence. "
-                    "At the end, output a separate JSON object on a new line with two fields: 'verdict' (GOOD or BAD) and 'score' (1–5). "
-                    "Example format:\nEvaluation: <your paragraph here>\n{\"verdict\": \"BAD\", \"score\": 1}"
+                    "Then output a JSON object on a new line with 'verdict' (GOOD or BAD) and 'score' (1–5). "
+                    "Your tone and structure must remain consistent across evaluations.\n\n"
+                    "Example 1:\n"
+                    "Evaluation: The player's response shifts the focus from the original statement to a broader ethical question, "
+                    "which may not directly address the concern about unintended consequences. While this shows adaptability by considering "
+                    "ethical implications, it lacks clarity in directly responding to the initial claim and does not demonstrate emotional "
+                    "intelligence by not acknowledging the potential risks of AI in warfare. A better response would have acknowledged the "
+                    "concern and provided a balanced view on both the risks and potential benefits of AI in warfare.\n"
+                    "{\"verdict\": \"BAD\", \"score\": 2}\n\n"
+                    "Example 2:\n"
+                    "Evaluation: The player's response shifts the focus from the original statement to a question about ethics, which may not "
+                    "directly address the issue of unintended consequences. While the question is relevant, it lacks clarity and adaptability "
+                    "in responding to the initial assertion. A more effective response would have directly addressed the potential unintended "
+                    "consequences of AI in warfare and shown empathy toward the human impact.\n"
+                    "{\"verdict\": \"BAD\", \"score\": 2}\n\n"
+                    "Be consistent in tone, structure, and wording style. Do not rephrase unnecessarily. "
+                    "Output the JSON object immediately after your paragraph, starting with '{'."
                 )
             },
-            {"role": "user", "content": question},
-            {"role": "user", "content": f"Player Response: {answer}"}
+            {
+                "role": "user",
+                "content": f"Question: {question}\nPlayer Response: {answer}"
+            }
         ],
-        "temperature": 0.2,
+        "temperature": 0,
         "stream": False,
         "think": False,
+        "seed": 42,
+        "top_p": 1.0,
+        "top_k": 1,
     }
+
     # make  request to serveo api
     response = requests.post(url, headers=headers, data=json.dumps(data))
 

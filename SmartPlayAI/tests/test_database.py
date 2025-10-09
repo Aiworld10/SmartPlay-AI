@@ -1,4 +1,5 @@
 
+from difflib import SequenceMatcher  # for text similarity comparison
 import pytest
 import uuid
 from sqlalchemy import text
@@ -224,3 +225,116 @@ async def test_reset_answered_questions(db_session):
     random_questions_after_reset = await get_random_questions_by_theme(db_session, theme, limit=5, player_id=player_id)
     # Should retrieve questions now
     assert len(random_questions_after_reset) > 0
+
+
+@pytest.mark.asyncio
+async def test_store_and_retrieve_llm_feedback(db_session):
+    """Test storing and retrieving LLM feedback for a response."""
+    # Create player and question
+    player_data = PlayerCreate(name=f"feedback_{uuid.uuid4().hex[:8]}")
+    player = await create_player(db_session, player_data, "testpassword")
+
+    question_data = QuestionCreate(
+        theme="ethics",
+        question_text="Should AI be allowed to make moral decisions?"
+    )
+    question = await store_question(db_session, question_data)
+    await db_session.commit()
+
+    # Store a response
+    response_data = schemas.ResponseCreate(
+        player_id=player.id,
+        question_id=question.id,
+        response_text="AI can assist, but humans should have the final say.",
+        score=4
+    )
+    response = await store_response(db_session, response_data)
+    await db_session.commit()
+
+    # Add LLM feedback to this response
+    feedback_text = "Good reasoning, aligns with ethical responsibility."
+    response.llm_feedback = feedback_text
+    await db_session.commit()
+    await db_session.refresh(response)
+
+    # Verify feedback was stored
+    assert response.llm_feedback == feedback_text
+
+    # Fetch directly from DB to double-check persistence
+    result = await db_session.execute(
+        text("SELECT llm_feedback FROM responses WHERE player_id=:pid AND question_id=:qid"),
+        {"pid": player.id, "qid": question.id}
+    )
+    stored_feedback = result.scalar_one()
+    assert stored_feedback == feedback_text
+
+
+@pytest.mark.asyncio
+async def test_toggle_like_dislike_response(db_session):
+    """Test updating the liked status on a response without affecting the player's score."""
+    # Create player and question
+    player_data = PlayerCreate(name=f"like_{uuid.uuid4().hex[:8]}")
+    player = await create_player(db_session, player_data, "testpassword")
+
+    question_data = QuestionCreate(
+        theme="social",
+        question_text="Would you share your last piece of food with a friend?"
+    )
+    question = await store_question(db_session, question_data)
+    await db_session.commit()
+
+    # Store response
+    response_data = schemas.ResponseCreate(
+        player_id=player.id,
+        question_id=question.id,
+        response_text="Yes, sharing is caring.",
+        score=5
+    )
+    response = await store_response(db_session, response_data)
+    await db_session.commit()
+    await db_session.refresh(player)
+    initial_score = player.score
+
+    # Player likes the LLM feedback
+    response.liked = True
+    await db_session.commit()
+    await db_session.refresh(response)
+
+    # Player changes their mind — dislikes
+    response.liked = False
+    await db_session.commit()
+    await db_session.refresh(response)
+    await db_session.refresh(player)
+
+    assert response.liked is False
+    # Ensure the player's score remains unchanged
+    assert player.score == initial_score
+
+
+def similar(a: str, b: str) -> float:
+    """Compute similarity ratio between two strings."""
+    return SequenceMatcher(None, a, b).ratio()
+
+
+@pytest.mark.asyncio
+async def test_fetch_llm_response_consistency():
+    """Test that the LLM response evaluation is consistent across repeated calls."""
+    question_text = "Is it ethical to use AI in warfare?"
+    player_response = "AI should not be used in warfare as it can lead to unintended consequences."
+
+    first_eval = evaluate_player_response(player_response, question_text)
+    # debug print(first_eval)
+    print(first_eval)
+    second_eval = evaluate_player_response(player_response, question_text)
+    print(second_eval)
+    # Compare structure
+    first_text, first_meta = first_eval
+    second_text, second_meta = second_eval
+
+    # Check verdict and score are the same (deterministic numeric logic)
+    assert first_meta["verdict"] == second_meta["verdict"], "Verdicts differ between runs"
+    assert first_meta["score"] == second_meta["score"], "Scores differ between runs"
+
+    # Check textual similarity — small LLM phrasing differences allowed
+    sim = similar(first_text, second_text)
+    assert sim > 0.7, f"LLM feedback text varied too much (similarity={sim:.2f})"

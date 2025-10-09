@@ -53,7 +53,7 @@ SERVEO_host please follow the fetchLLMresponse.py for instruction, need ollama i
 ### 4. Run the Application
 
 ```bash
-uv run main.py
+uv run uvicorn main:app --host 127.0.0.1 --port 8080 --reload
 ```
 
 ### 5. Access the App
@@ -114,3 +114,11 @@ smartplay-ai/
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+```
+
+```
+
+```
+
+```

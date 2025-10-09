@@ -2,6 +2,9 @@
 # Tests for user registration and login functionality using FastAPI's TestClient
 import uuid  # for generating unique usernames
 # use the synchronous TestClient for testing FastAPI endpoints such as get, post
+import pytest
+import pytest_asyncio
+from fastapi.testclient import TestClient
 
 
 def test_register_user(client):
