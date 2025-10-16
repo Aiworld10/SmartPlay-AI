@@ -68,10 +68,10 @@ class ResponseBase(BaseModel):
     question_id: int
     response_text: str
     score: Optional[int] = 0
-    created_at: AwareDatetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
     llm_feedback: Optional[str] = None
     liked: Optional[bool] = None
+    created_at: AwareDatetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ResponseCreate(ResponseBase):
@@ -81,6 +81,15 @@ class ResponseCreate(ResponseBase):
 
 class ResponseOut(ResponseBase):
     model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseFeedbackUpdate(BaseModel):
+    liked: bool
+
+
+class ResponseExistingEvaluation(BaseModel):
+    score: int
+    llm_feedback: str
 
 
 # Helper schemas
