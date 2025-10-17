@@ -97,6 +97,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -144,10 +145,11 @@
         const resultData = JSON.parse(localStorage.getItem('resultData') || '{}');
         const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
 
-        if (!resultData.evaluation) {
-            // Redirect if no data found
+        if (!resultData || !("evaluation" in resultData)) {
+            // No result data - redirect to theme selection
             window.location.href = '/auth/theme-selection';
         }
+
 
         // Display result data
         document.getElementById('evaluation-text').textContent = resultData.evaluation;

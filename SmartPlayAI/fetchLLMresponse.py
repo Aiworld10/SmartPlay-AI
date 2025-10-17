@@ -55,27 +55,30 @@ def evaluate_player_response(question: str, answer: str):
         "top_k": 1,
     }
 
-    # make  request to serveo api
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    if not response.ok:
-        raise RuntimeError(
-            f"API Error {response.status_code}: {response.text}")
-
-    body = response.json()
-    content = body.get("message", {}).get("content", "").strip()
-
-    # split evaluation + JSON
-    lines = content.split("\n")
-    json_line = lines[-1].strip()
-    evaluation_text = "\n".join(lines[:-1]).strip()
-
     try:
-        result = json.loads(json_line)
-    except json.JSONDecodeError:
-        result = {"verdict": None, "score": None}
+        response = requests.post(url, headers=headers,
+                                 data=json.dumps(data), timeout=10)
 
-    return evaluation_text, result
+        if not response.ok:
+            raise RuntimeError(
+                f"API Error {response.status_code}: {response.text}")
+
+        body = response.json()
+        content = body.get("message", {}).get("content", "").strip()
+
+        lines = content.split("\n")
+        json_line = lines[-1].strip()
+        evaluation_text = "\n".join(lines[:-1]).strip()
+
+        try:
+            result = json.loads(json_line)
+        except json.JSONDecodeError:
+            result = {"verdict": None, "score": None}
+
+        return evaluation_text, result
+    except Exception as e:
+        print(f"[Fallback] Using default evaluation due to error: {e}")
+        return "", {"verdict": "BAD", "score": 1}
 
 
 # -------------------------------
