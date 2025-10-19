@@ -1,5 +1,5 @@
 # This define my sqlalchemy models classes for the database tables to work with postgresql
-from sqlalchemy import Boolean, Column, Integer, String, Text, DateTime, ForeignKey, PrimaryKeyConstraint, func
+from sqlalchemy import Boolean, Column, Integer, String, Text, DateTime, ForeignKey, PrimaryKeyConstraint, func, select
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import event
@@ -15,10 +15,14 @@ class Player(Base):
     # Optional password field
     password_hash = Column(String(128), nullable=True)
     score = Column(Integer, default=0)
-    created_at = Column(DateTime, default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationship to responses
-    responses = relationship("Response", back_populates="player")
+    responses = relationship(
+        "Response",
+        back_populates="player",
+        cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Player(id={self.id}, name={self.name}, score={self.score})>"
@@ -50,7 +54,7 @@ class Response(Base):
     response_text = Column(Text, nullable=False)
     # Score for this specific response
     score = Column(Integer, default=0, index=True)
-    created_at = Column(DateTime, default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     llm_feedback = Column(Text, nullable=True)
     liked = Column(Boolean, nullable=True)
     # Composite primary key

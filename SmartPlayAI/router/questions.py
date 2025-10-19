@@ -84,6 +84,7 @@ async def get_random_questions(
         }
     )
 
+
 @router.get("/random/api", response_model=schemas.ListQuestionsOut)
 async def get_random_questions_api(
         theme: str = Query(...),

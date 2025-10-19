@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete
@@ -215,22 +215,32 @@ async def get_responses_by_player(db: AsyncSession, player_id: int):
     return result.scalars().all()
 
 
-async def reset_user_responses(db: AsyncSession, player_id: int):
-    """
-    Delete all Response instances associated with a specific player.
-
-    Args:
-        db (AsyncSession): Async SQLAlchemy database session.
-        player_id (int): Unique identifier of the Player.
-
-    Returns:
-        int: The number of responses deleted.
-    """
-    # Execute delete statement for all responses by the player
+async def reset_player_scores(db: AsyncSession, player_id: int):
+    """Reset a player's score to 0."""
     result = await db.execute(
-        delete(models.Response).where(models.Response.player_id == player_id)
+        select(models.Player).where(models.Player.id == player_id)
     )
-    deleted_count = result.rowcount
+    player = result.scalar_one_or_none()
+
+    if player:
+        player.score = 0
+        await db.commit()
+        await db.refresh(player)
+
+    return player
+
+
+async def reset_user_responses(db: AsyncSession, player_id: int) -> int:
+    """Delete all responses for a specific player."""
+    result = await db.execute(
+        select(models.Response).where(models.Response.player_id == player_id)
+    )
+    responses = result.scalars().all()
+
+    for response in responses:
+        await db.delete(response)
+
+    deleted_count = len(responses)
     await db.commit()
 
     return deleted_count
@@ -255,7 +265,8 @@ async def get_leaderboard(db: AsyncSession, theme: str = None, limit: int = 10):
             models.Player.name,
             func.coalesce(func.sum(models.Response.score), 0).label('score'),
             func.count(models.Response.player_id).label('games_played'),
-            func.coalesce(func.avg(models.Response.score), 0).label('average_score')
+            func.coalesce(func.avg(models.Response.score),
+                          0).label('average_score')
         )
         .select_from(models.Player)
         .outerjoin(models.Response, models.Player.id == models.Response.player_id)

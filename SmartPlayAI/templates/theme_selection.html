@@ -26,11 +26,14 @@
     </style>
 </head>
 
+
 <body class="bg-light">
+    {% include 'header.html' %}
     <div class="container py-5">
         <div class="text-center mb-4">
+
             <h2>Welcome, <span id="username">{{ username }}</span>!</h2>
-            <p>Your current score: <span id="score">{{ user_score }}</span></p>
+            <!-- <p>Your current score: <span id="score">{{ user_score }}</span></p> -->
             <h4>Select a Theme to Start Playing</h4>
         </div>
         <div id="themeCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -45,7 +48,8 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Survival</h5>
                             <p class="card-text">Test your survival instincts in extreme situations</p>
-                            <a href="/questions/random?theme=survival&user_id={{user_id}}" class="btn btn-primary">Select</a>
+                            <a href="/questions/random?theme=survival&user_id={{user_id}}"
+                                class="btn btn-primary">Select</a>
                         </div>
                     </div>
                 </div>
@@ -60,7 +64,8 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Work</h5>
                             <p class="card-text">Handle professional challenges and workplace dilemmas</p>
-                            <a href="/questions/random?theme=work&user_id={{user_id}}" class="btn btn-primary">Select</a>
+                            <a href="/questions/random?theme=work&user_id={{user_id}}"
+                                class="btn btn-primary">Select</a>
                         </div>
                     </div>
                 </div>
@@ -75,27 +80,11 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Interview</h5>
                             <p class="card-text">Handle interview scenarios and questions</p>
-                            <a href="/questions/random?theme=interview&user_id={{user_id}}" class="btn btn-primary">Select</a>
+                            <a href="/questions/random?theme=interview&user_id={{user_id}}"
+                                class="btn btn-primary">Select</a>
                         </div>
                     </div>
                 </div>
-
-                <!-- Moral Theme -->
-                <!-- <div class="carousel-item">
-                    <div class="card theme-card shadow-sm">
-                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
-                            style="height: 200px;">
-                            <i class="fas fa-balance-scale text-white" style="font-size: 3rem;"></i>
-                        </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Moral</h5>
-                            <p class="card-text">Face ethical dilemmas and moral choices</p>
-                            <button class="btn btn-primary" hx-post="/select_theme"
-                                hx-vals='{"theme": "moral", "username": "{{ username }}"}'
-                                hx-target="#theme-selection-result" hx-swap="innerHTML">Select</button>
-                        </div>
-                    </div>
-                </div> -->
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#themeCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon"></span>

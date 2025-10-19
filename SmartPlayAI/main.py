@@ -141,8 +141,16 @@ async def generate_question_form(request: Request):
 async def index(request: Request,
                 current_user: Optional[schemas.PlayerBase] = Depends(optional_current_user)):
     """Render the main index page."""
-    # print("Current user:", current_user)
-    return templates.TemplateResponse(request, "index.html", {"user": current_user})
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {
+            "user": current_user,
+            "username": current_user.name if current_user else None,
+            "user_score": current_user.score if current_user else None,
+            "user_id": current_user.id if current_user else None
+        }
+    )
 
 
 @app.get('/leaderboard')

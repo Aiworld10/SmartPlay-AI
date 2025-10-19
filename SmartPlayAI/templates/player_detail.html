@@ -1,0 +1,120 @@
+{% include 'header.html' %}
+<div class="container py-5">
+
+    <!-- Player Header / Hero Section -->
+    <div class="text-center mb-5">
+        <div class="position-relative d-inline-block">
+            <img src="https://ui-avatars.com/api/?name={{ player.name }}&background=random&color=fff&size=120"
+                class="rounded-circle shadow-sm mb-3" alt="{{ player.name }}">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success fs-6">
+                <i class="fas fa-star me-1"></i>{{ player.score }}
+            </span>
+        </div>
+
+        <h2 class="fw-bold text-dark mb-2">{{ player.name }}</h2>
+        <p class="text-muted">
+            <i class="fas fa-id-badge me-1"></i>ID: {{ player.id }}
+        </p>
+
+        <hr class="w-50 mx-auto opacity-50">
+        <p class="lead text-secondary">Showcasing performance across <strong>Work</strong>, <strong>Survival</strong>,
+            and <strong>Interview</strong> challenges.</p>
+    </div>
+
+    <!-- Response Summary -->
+    <div class="mb-4 text-center">
+        <h4 class="fw-bold text-primary mb-3"><i class="fas fa-chart-line me-2"></i>Performance Overview</h4>
+        <div class="progress mx-auto" style="height: 25px; width: 60%;">
+            {% set max_score = 300 %}
+            {% set percentage = (player.score / max_score * 100) if player.score else 0 %}
+            <div class="progress-bar bg-success fw-semibold" role="progressbar"
+                style="width: {{ percentage if percentage < 100 else 100 }}%">
+                {{ percentage|round(1) }}%
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Responses by Theme -->
+    <div class="accordion shadow-sm rounded-3" id="responseAccordion">
+        {% set themes = {"work":"briefcase", "survival":"campground", "interview":"comments"} %}
+        {% for theme, icon in themes.items() %}
+        {% set theme_responses = responses | selectattr("question_theme", "equalto", theme) | list %}
+        {% if theme_responses %}
+        <div class="accordion-item mb-3 border-0 rounded-3 shadow-sm">
+            <h2 class="accordion-header" id="heading-{{ theme }}">
+                <button class="accordion-button collapsed fw-semibold text-capitalize bg-light" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#collapse-{{ theme }}" aria-expanded="false"
+                    aria-controls="collapse-{{ theme }}">
+                    <i class="fas fa-{{ icon }} me-2 text-primary"></i>{{ theme }} Responses
+                    <span class="badge bg-primary ms-2">{{ theme_responses|length }}</span>
+                </button>
+            </h2>
+            <div id="collapse-{{ theme }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ theme }}"
+                data-bs-parent="#responseAccordion">
+                <div class="accordion-body bg-white">
+
+                    {% for response in theme_responses %}
+                    <div class="card border-0 shadow-sm mb-4 rounded-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-primary mb-2">
+                                <i class="fas fa-question-circle me-1"></i>{{ response.question_text }}
+                            </h6>
+                            <p class="mb-1"><strong>Your Answer:</strong> {{ response.response_text }}</p>
+
+                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                <span class="fw-semibold text-secondary">
+                                    <i class="fas fa-bolt me-1"></i>Score:
+                                    <span
+                                        class="{% if response.score >= 4 %}text-success{% elif response.score >= 2 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ response.score }}
+                                    </span>
+                                </span>
+
+                                {% if response.llm_feedback %}
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#feedback-{{ loop.index }}-{{ theme }}" aria-expanded="false">
+                                    <i class="fas fa-comment-dots me-1"></i>View Feedback
+                                </button>
+                                {% endif %}
+                            </div>
+
+                            {% if response.llm_feedback %}
+                            <div class="collapse mt-3" id="feedback-{{ loop.index }}-{{ theme }}">
+                                <div class="card card-body bg-light border-0">
+                                    <strong>LLM Feedback:</strong>
+                                    <p class="mb-0">{{ response.llm_feedback }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <p class="text-muted small mt-3 mb-0">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ response.created_at.strftime('%B %d, %Y at %I:%M %p') if response.created_at else
+                                'N/A' }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if not responses %}
+    <div class="alert alert-info text-center mt-4 shadow-sm">
+        <i class="fas fa-info-circle me-2"></i>This player has not submitted any responses yet.
+    </div>
+    {% endif %}
+
+    <!-- Back button -->
+    <div class="text-center mt-5">
+        <a href="/auth/theme-selection" class="btn btn-lg btn-outline-primary px-5 rounded-pill shadow-sm">
+            <i class="fas fa-arrow-left me-2"></i>Back to Themes
+        </a>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
