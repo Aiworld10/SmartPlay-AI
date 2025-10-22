@@ -1,5 +1,4 @@
 # This allow us to config the database, how data is validated and serialzied for API requests and response using pydantics
-from pydantic import AwareDatetime
 from datetime import datetime, timezone
 from pydantic import BaseModel, AwareDatetime, Field, ConfigDict, field_validator
 from typing import List, Optional
@@ -10,10 +9,22 @@ from typing import List, Optional
 
 
 class PlayerBase(BaseModel):
-    id: int
     name: str
-    score: int
-    created_at: AwareDatetime
+    score: Optional[int] = 0
+    created_at: AwareDatetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
+    disabled: bool = False
+
+    @field_validator("created_at", mode="before")
+    @classmethod
+    def ensure_player_created_at_timezone(cls, value: datetime | None):
+        if value is None:
+            return datetime.now(timezone.utc)
+        if isinstance(value, str):
+            value = datetime.fromisoformat(value)
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value
 
 
 class PlayerCreate(PlayerBase):
@@ -72,6 +83,17 @@ class ResponseBase(BaseModel):
     liked: Optional[bool] = None
     created_at: AwareDatetime = Field(
         default_factory=lambda: datetime.now(timezone.utc))
+
+    @field_validator("created_at", mode="before")
+    @classmethod
+    def ensure_response_created_at_timezone(cls, value: datetime | None):
+        if value is None:
+            return datetime.now(timezone.utc)
+        if isinstance(value, str):
+            value = datetime.fromisoformat(value)
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value
 
 
 class ResponseCreate(ResponseBase):
