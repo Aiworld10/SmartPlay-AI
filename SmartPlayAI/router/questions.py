@@ -1,3 +1,4 @@
+from pathlib import Path
 from fastapi import APIRouter, Request, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -6,8 +7,10 @@ from model import schemas, crud
 from model.database import get_session
 from fastapi import Query
 
+TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
+
 router = APIRouter(prefix="/questions", tags=["questions"])
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 @router.post("/create", response_model=schemas.QuestionOut)
