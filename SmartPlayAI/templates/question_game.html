@@ -178,15 +178,15 @@
     </div>
 
     <script>
-        // Game state
+        // Initialize game state with server-provided data
         const gameState = {
-            questions: {{ questions | tojson }},
+            questions: JSON.parse('{{ questions | tojson | safe }}'),
             currentIndex: 0,
             totalScore: 0,
             timeLeft: 60,
             timerId: null,
-            userId: {{ user_id }},
-            theme: "{{ theme }}"
+            userId: Number('{{ user_id }}'),
+            theme: '{{ theme }}'
         };
 
         // DOM elements
@@ -315,13 +315,45 @@
             }
         }
 
-        // Skip question
-        skipBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to skip this question? You will receive 0 points.')) {
-                answerInput.value = 'Skipped';
-                submitAnswer(true);
-            }
-        });
+        // Skip question — advance locally without submitting/evaluating to avoid the "Evaluating..." state
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => {
+                // Stop any running timer
+                stopTimer();
+
+                // Advance index
+                gameState.currentIndex = (gameState.currentIndex || 0) + 1;
+
+                // If we've completed all questions, go to leaderboard
+                if (gameState.currentIndex >= gameState.questions.length) {
+                    // Persist state if needed and redirect
+                    localStorage.setItem('gameState', JSON.stringify(gameState));
+                    window.location.href = `/questions/leaderboard?theme=${gameState.theme}`;
+                    return;
+                }
+
+                // Load next question in-place
+                const nextQuestion = gameState.questions[gameState.currentIndex];
+                questionText.textContent = nextQuestion.question_text;
+                currentQuestionDisplay.textContent = gameState.currentIndex + 1;
+
+                // Update progress bar
+                const progress = ((gameState.currentIndex + 1) / gameState.questions.length) * 100;
+                progressBar.style.width = progress + '%';
+
+                // Clear answer and counters
+                answerInput.value = '';
+                wordCounter.textContent = '0 / 150 words';
+                wordCounter.classList.remove('exceeded');
+
+                // Persist updated state
+                localStorage.setItem('gameState', JSON.stringify(gameState));
+
+                // Restart timer and focus
+                startTimer();
+                answerInput.focus();
+            });
+        }
 
         // Form submit handler
         answerForm.addEventListener('submit', (e) => {
