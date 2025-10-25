@@ -78,11 +78,11 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def authenticate_user(db: AsyncSession, username: str, password: str):
+async def authenticate_user(db: AsyncSession, username: str, password: str) -> schemas.PlayerRead | None:
     user = await crud.get_player_by_name(db, username)
-    if not user or not verify_password(password, user.password_hash):
+    if not user or not verify_password(password, str(user.password_hash)):
         return None
-    return user
+    return schemas.PlayerRead.model_validate(user)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
@@ -93,7 +93,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-async def _get_user_from_token(token: str, db: AsyncSession) -> schemas.PlayerBase:
+async def _get_user_from_token(token: str, db: AsyncSession) -> schemas.PlayerRead:
     """Decode JWT and fetch user from DB."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -106,7 +106,7 @@ async def _get_user_from_token(token: str, db: AsyncSession) -> schemas.PlayerBa
     user = await crud.get_player_by_name(db, username)
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
-    return user
+    return schemas.PlayerRead.model_validate(user)
 
 
 # ---------------------------
@@ -291,7 +291,7 @@ async def register(
 @router.get("/theme-selection", response_class=HTMLResponse)
 async def theme_selection(
     request: request,
-    current_user: schemas.PlayerBase = Depends(get_current_user_from_cookie),
+    current_user: schemas.PlayerRead = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_session),
 ):
     return templates.TemplateResponse(

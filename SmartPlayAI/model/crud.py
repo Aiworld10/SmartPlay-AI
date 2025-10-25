@@ -27,7 +27,7 @@ async def get_player(db: AsyncSession, player_id: int):
     return result
 
 
-async def get_player_by_name(db: AsyncSession, name: str):
+async def get_player_by_name(db: AsyncSession, name: str) -> models.Player | None:
     result = await db.execute(
         select(models.Player).where(models.Player.name == name)
     )
@@ -47,7 +47,8 @@ async def create_player(db: AsyncSession, player: schemas.PlayerCreate, plain_pa
     """
     hashed_password = pwd_context.hash(plain_password)
     user = models.Player(
-        name=player.name, score=player.score, password_hash=hashed_password)
+        name=player.name, password_hash=hashed_password, created_at=func.now()
+    )
     db.add(user)
     await db.commit()
     await db.refresh(user)
@@ -78,7 +79,7 @@ async def get_question_by_id(db: AsyncSession, question_id: int):
 
 
 async def get_random_questions_by_theme(db: AsyncSession, theme: str, limit:
-                                        int = 5, player_id: int = None):
+                                        int = 5, player_id: int = 0):
     """
     Retrieve a list of random Question instances filtered by theme.
     player will only see those question once after they submit an answer.
@@ -217,13 +218,17 @@ async def get_responses_by_player(db: AsyncSession, player_id: int):
 
 async def reset_player_scores(db: AsyncSession, player_id: int):
     """Reset a player's score to 0."""
+    if not player_id:
+        return None
+    else:
+        player_id = int(player_id)
     result = await db.execute(
         select(models.Player).where(models.Player.id == player_id)
     )
     player = result.scalar_one_or_none()
 
     if player:
-        player.score = 0
+        player.score = 0  # column[int] = int is allowed
         await db.commit()
         await db.refresh(player)
 
@@ -232,6 +237,10 @@ async def reset_player_scores(db: AsyncSession, player_id: int):
 
 async def reset_user_responses(db: AsyncSession, player_id: int) -> int:
     """Delete all responses for a specific player."""
+    if not player_id:
+        return 0
+    else:
+        player_id = int(player_id)
     result = await db.execute(
         select(models.Response).where(models.Response.player_id == player_id)
     )
@@ -246,7 +255,7 @@ async def reset_user_responses(db: AsyncSession, player_id: int) -> int:
     return deleted_count
 
 
-async def get_leaderboard(db: AsyncSession, theme: str = None, limit: int = 10):
+async def get_leaderboard(db: AsyncSession, theme: str | None = None, limit: int = 10):
     """
     Get leaderboard data, optionally filtered by theme.
 

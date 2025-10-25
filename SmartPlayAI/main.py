@@ -113,7 +113,7 @@ def generate_question(theme: str) -> str:
 async def optional_current_user(
     request: Request,
     db: AsyncSession = Depends(get_session),
-) -> Optional[schemas.PlayerBase]:
+) -> Optional[schemas.PlayerRead]:
     token = request.cookies.get("access_token")
     if not token:
         return None
@@ -155,7 +155,7 @@ async def index(request: Request,
 
 @app.get('/leaderboard')
 async def get_leaderboard(
-    theme: str = None,
+    theme: str | None = None,
     db: AsyncSession = Depends(get_session)
 ):
     """Get leaderboard data, optionally filtered by theme."""

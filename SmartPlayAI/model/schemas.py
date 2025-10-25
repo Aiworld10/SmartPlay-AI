@@ -10,15 +10,23 @@ from typing import List, Optional
 
 
 class PlayerBase(BaseModel):
-    id: int
+    # id: int
     name: str
-    score: int
-    created_at: AwareDatetime
+    score: int | None = 0
+    created_at: AwareDatetime | None = None
 
 
 class PlayerCreate(PlayerBase):
     """Schema for creating a new player"""
     pass
+
+
+class PlayerRead(BaseModel):
+    id: int
+    name: str
+    score: int
+    created_at: AwareDatetime | None = None
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PlayerUpdate(BaseModel):

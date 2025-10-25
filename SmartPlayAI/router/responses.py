@@ -32,7 +32,7 @@ async def answer_question(
     question_text: str = Form(...),
     response_text: str = Form(...),
     db: AsyncSession = Depends(get_session),
-    current_user: schemas.PlayerBase = Depends(get_current_user_from_cookie),
+    current_user: schemas.PlayerRead = Depends(get_current_user_from_cookie),
 ):
     # Evaluate with LLM
     text, result = evaluate_answer(
