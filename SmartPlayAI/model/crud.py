@@ -1,4 +1,4 @@
-from sqlalchemy import func, update
+from sqlalchemy import func, update, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete
@@ -187,13 +187,31 @@ async def store_response(db: AsyncSession, response: schemas.ResponseCreate):
     Returns:
         Response: The newly created Response object.
     """
-    db_response = models.Response(
-        player_id=response.player_id,
-        question_id=response.question_id,
-        response_text=response.response_text,
-        score=response.score
+    existing_stmt = select(models.Response).where(
+        models.Response.player_id == response.player_id,
+        models.Response.question_id == response.question_id
     )
-    db.add(db_response)
+    existing = await db.execute(existing_stmt)
+    db_response = existing.scalar_one_or_none()
+
+    if db_response:
+        db_response.response_text = response.response_text
+        if response.score is not None:
+            db_response.score = response.score
+        if response.llm_feedback is not None:
+            db_response.llm_feedback = response.llm_feedback
+        if response.liked is not None:
+            db_response.liked = response.liked
+    else:
+        db_response = models.Response(
+            player_id=response.player_id,
+            question_id=response.question_id,
+            response_text=response.response_text,
+            score=response.score,
+            llm_feedback=response.llm_feedback,
+            liked=response.liked,
+        )
+        db.add(db_response)
     await db.commit()
     await db.refresh(db_response)
     return db_response
@@ -312,3 +330,97 @@ async def get_leaderboard(db: AsyncSession, theme: str | None = None, limit: int
         })
 
     return leaderboard
+
+
+async def get_cached_evaluation(db: AsyncSession, question_id: int, question_text: str, response_text: str):
+    """
+    Retrieve an existing evaluation matching the same question and response text.
+    """
+    stmt = (
+        select(models.Response)
+        .join(models.Question, models.Response.question_id == models.Question.id)
+        .where(
+            models.Response.response_text == response_text,
+            or_(
+                models.Response.question_id == question_id,
+                models.Question.question_text == question_text
+            )
+        )
+        .order_by(models.Response.created_at.asc())
+    )
+    result = await db.execute(stmt)
+    return result.scalars().first()
+
+
+async def update_response_like_status(db: AsyncSession, player_id: int, question_id: int, liked: bool):
+    """
+    Update the like/dislike status for a response.
+    """
+    stmt = select(models.Response).where(
+        models.Response.player_id == player_id,
+        models.Response.question_id == question_id
+    )
+    result = await db.execute(stmt)
+    db_response = result.scalar_one_or_none()
+
+    if not db_response:
+        return None
+
+    db_response.liked = liked
+    await db.commit()
+    await db.refresh(db_response)
+    return db_response
+
+
+async def list_response_feedback(db: AsyncSession, liked: bool | None = None):
+    """
+    List responses with optional filtering by liked status.
+    """
+    stmt = select(models.Response)
+    if liked is not None:
+        stmt = stmt.where(models.Response.liked == liked)
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+
+async def get_leaderboard_response_details(db: AsyncSession, theme: str | None = None):
+    """
+    Fetch question, response, and score details for leaderboard view.
+    """
+    stmt = (
+        select(
+            models.Player.id.label("player_id"),
+            models.Player.name.label("player_name"),
+            models.Question.theme.label("theme"),
+            models.Question.question_text.label("question_text"),
+            models.Response.response_text.label("response_text"),
+            models.Response.score.label("score"),
+            models.Response.llm_feedback.label("llm_feedback"),
+            models.Response.liked.label("liked"),
+            models.Response.created_at.label("created_at")
+        )
+        .join(models.Response, models.Player.id == models.Response.player_id)
+        .join(models.Question, models.Response.question_id == models.Question.id)
+        .order_by(models.Response.score.desc(), models.Response.created_at.desc())
+    )
+
+    if theme:
+        stmt = stmt.where(models.Question.theme == theme)
+
+    result = await db.execute(stmt)
+    rows = result.fetchall()
+
+    return [
+        {
+            "player_id": row.player_id,
+            "player_name": row.player_name,
+            "theme": row.theme,
+            "question_text": row.question_text,
+            "response_text": row.response_text,
+            "score": row.score,
+            "llm_feedback": row.llm_feedback,
+            "liked": row.liked,
+            "created_at": row.created_at,
+        }
+        for row in rows
+    ]

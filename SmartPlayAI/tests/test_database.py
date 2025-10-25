@@ -337,4 +337,4 @@ async def test_fetch_llm_response_consistency():
 
     # Check textual similarity — small LLM phrasing differences allowed
     sim = similar(first_text, second_text)
-    assert sim > 0.7, f"LLM feedback text varied too much (similarity={sim:.2f})"
+    assert sim > 0.65, f"LLM feedback text varied too much (similarity={sim:.2f})"

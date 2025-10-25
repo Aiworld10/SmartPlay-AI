@@ -319,12 +319,41 @@
         }
 
         // Skip question
-        skipBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to skip this question? You will receive 0 points.')) {
-                answerInput.value = 'Skipped';
-                submitAnswer(true);
-            }
-        });
+        // If you prefer no confirmation dialog when skipping, skip directly. Also guard in case the button
+        // is removed from the DOM so the script doesn't throw an error.
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => {
+                // Stop the timer and advance to the next question locally without submitting/evaluating.
+                stopTimer();
+
+                // Move to next index
+                gameState.currentIndex = (gameState.currentIndex || 0) + 1;
+
+                // If we've finished all questions, go to leaderboard
+                if (gameState.currentIndex >= gameState.questions.length) {
+                    // Persist any final state if needed
+                    localStorage.setItem('gameState', JSON.stringify(gameState));
+                    window.location.href = `/questions/leaderboard?theme=${gameState.theme}`;
+                    return;
+                }
+
+                // Save updated game state and prepare nextQuestionData (same shape used elsewhere)
+                localStorage.setItem('gameState', JSON.stringify(gameState));
+
+                const nextQuestionData = {
+                    questions: gameState.questions,
+                    currentIndex: gameState.currentIndex,
+                    totalScore: gameState.totalScore,
+                    userId: gameState.userId,
+                    theme: gameState.theme
+                };
+
+                localStorage.setItem('nextQuestionData', JSON.stringify(nextQuestionData));
+
+                // Navigate to next question page (this will reinitialize the template using nextQuestionData)
+                window.location.href = '/questions/next';
+            });
+        }
 
         // Form submit handler
         answerForm.addEventListener('submit', (e) => {

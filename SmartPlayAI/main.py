@@ -1,5 +1,6 @@
 
 import os
+from pathlib import Path
 from router.authenticate import _get_user_from_token
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Request, Form, Depends
@@ -16,9 +17,11 @@ from model.database import get_session
 from router import players, questions, responses, authenticate
 
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(title="SmartPlayAI", version="1.0.0")
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 app.include_router(players.router)
 app.include_router(questions.router)
@@ -167,6 +170,20 @@ async def get_leaderboard(
         print(f"Error fetching leaderboard: {e}")
         raise HTTPException(
             status_code=500, detail="Failed to fetch leaderboard")
+
+
+@app.get('/leaderboard/details')
+async def get_leaderboard_details(
+    theme: str = None,
+    db: AsyncSession = Depends(get_session),
+):
+    """Fetch question, response, and score details for leaderboard review."""
+    try:
+        details = await crud_ops.get_leaderboard_response_details(db, theme)
+        return details
+    except Exception as e:
+        print(f"Error fetching leaderboard details: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard details")
 
 
 if __name__ == "__main__":

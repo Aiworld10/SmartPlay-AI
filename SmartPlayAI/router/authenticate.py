@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from fastapi import (
@@ -27,8 +28,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 ENVIRONMENT = os.getenv("RAILWAY_ENVIRONMENT_NAME", "development")
 IS_PRODUCTION = ENVIRONMENT == "production"
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 router = APIRouter(prefix="/auth", tags=["authentication"])
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
