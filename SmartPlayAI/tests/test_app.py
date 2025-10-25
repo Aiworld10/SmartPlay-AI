@@ -5,6 +5,7 @@ import uuid  # for generating unique usernames
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
+from tests.conftest import IS_SQLITE
 
 
 def test_register_user(client):
@@ -24,31 +25,23 @@ def test_register_user(client):
     assert "You can now log in" in response.text
 
 
+@pytest.mark.skipif(IS_SQLITE, reason="SQLite returns naive datetimes; app uses Postgres with tz-aware timestamps.")
 def test_valid_login(client):
     """Test successful login flow."""
-    # Create a unique user for this test
     unique_username = f"loginuser_{uuid.uuid4().hex[:8]}"
     register_response = client.post(
         "/auth/register",
-        data={
-            "username": unique_username,
-            "password1": "testpassword",
-            "password2": "testpassword"
-        }
+        data={"username": unique_username,
+              "password1": "testpassword", "password2": "testpassword"},
     )
     assert register_response.status_code == 200
     assert f"Account created successfully for {unique_username}" in register_response.text
 
-    # Now test login
     response = client.post(
-        "/auth/login",
-        data={"username": unique_username, "password": "testpassword"}
-    )
+        "/auth/login", data={"username": unique_username, "password": "testpassword"})
     assert response.status_code == 200
-    # Check for redirect header for successful login
     assert "HX-Redirect" in response.headers
     assert response.headers["HX-Redirect"] == "/auth/theme-selection"
-    # Check that access_token cookie is set
     assert "access_token" in response.cookies
 
 

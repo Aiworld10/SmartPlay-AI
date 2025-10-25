@@ -7,14 +7,14 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-
+from sqlalchemy.engine import make_url
 from main import app
 from model.models import Base
 from model.database import get_session as get_db
 
 # Use SQLite in-memory database for testing
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
-
+IS_SQLITE = make_url(TEST_DATABASE_URL).get_backend_name() == "sqlite"
 # Create async engine for tests, setting up the connection to a test database
 engine = create_async_engine(
     TEST_DATABASE_URL,

@@ -20,26 +20,20 @@ def evaluate_player_response(question: str, answer: str):
             {
                 "role": "system",
                 "content": (
-                    "You are the game judge in SmartPlay AI. A player is given a scenario and responds under pressure. "
-                    "Write your evaluation as one concise paragraph (no more than 7 sentences) explaining the consequences "
-                    "of the player's choice and whether it shows clarity, adaptability, and emotional intelligence. "
-                    "Then output a JSON object on a new line with 'verdict' (GOOD or BAD) and 'score' (1–5). "
-                    "Your tone and structure must remain consistent across evaluations.\n\n"
-                    "Example 1:\n"
-                    "Evaluation: The player's response shifts the focus from the original statement to a broader ethical question, "
-                    "which may not directly address the concern about unintended consequences. While this shows adaptability by considering "
-                    "ethical implications, it lacks clarity in directly responding to the initial claim and does not demonstrate emotional "
-                    "intelligence by not acknowledging the potential risks of AI in warfare. A better response would have acknowledged the "
-                    "concern and provided a balanced view on both the risks and potential benefits of AI in warfare.\n"
-                    "{\"verdict\": \"BAD\", \"score\": 2}\n\n"
-                    "Example 2:\n"
-                    "Evaluation: The player's response shifts the focus from the original statement to a question about ethics, which may not "
-                    "directly address the issue of unintended consequences. While the question is relevant, it lacks clarity and adaptability "
-                    "in responding to the initial assertion. A more effective response would have directly addressed the potential unintended "
-                    "consequences of AI in warfare and shown empathy toward the human impact.\n"
-                    "{\"verdict\": \"BAD\", \"score\": 2}\n\n"
-                    "Be consistent in tone, structure, and wording style. Do not rephrase unnecessarily. "
-                    "Output the JSON object immediately after your paragraph, starting with '{'."
+                    """You are the game judge in SmartPlay AI. Evaluate the player's response using the exact structure and wording below. Write exactly 4 sentences in one concise paragraph, then output a JSON object on a new line with fields "verdict" (GOOD or BAD) and "score" (0–5). Use only the adjectives: clear / partially clear / unclear, adaptable / partially adaptable / not adaptable, emotionally attuned / partially attuned / not attuned. Do not introduce synonyms. Do not change the sentence templates.
+                        Sentence 1 (Clarity): "Evaluation: The response is {clear|partially clear|unclear} in addressing the scenario and states a rationale."
+                        Sentence 2 (Adaptability): "It is {adaptable|partially adaptable|not adaptable} in managing constraints and adjusting to the scenario's pressure."
+                        Sentence 3 (Emotional intelligence): "It is {emotionally attuned|partially attuned|not attuned} to stakeholders by acknowledging concerns and maintaining a constructive tone."
+                        Sentence 4 (Consequence): "As a result, the likely consequence is {positive|mixed|negative} for outcomes and relationships."
+                        Rubric → verdict/score (apply exactly):
+                        - If clarity = clear AND adaptability = adaptable AND EI = emotionally attuned → verdict=GOOD, score=4–5 (use 5 if consequences=positive, else 4).
+                        - If at least two dimensions are "partial" and none are "not/unclear" → verdict=GOOD, score=3.
+                        - If one dimension is "not/unclear" and the others are at least partial → verdict=BAD, score=2.
+                        - If two or more dimensions are "not/unclear" → verdict=BAD, score=0–1 (use 1 if consequences=mixed, else 0).
+                        Output the JSON immediately after the paragraph, starting with "{" and containing only "verdict" and "score".
+                        Example (format only, do not rephrase):
+                        Evaluation: The response is partially clear in addressing the scenario and states a rationale. It is partially adaptable in managing constraints and adjusting to the scenario's pressure. It is partially attuned to stakeholders by acknowledging concerns and maintaining a constructive tone. As a result, the likely consequence is mixed for outcomes and relationships.
+                        {"verdict":"GOOD","score":3}"""
                 )
             },
             {
