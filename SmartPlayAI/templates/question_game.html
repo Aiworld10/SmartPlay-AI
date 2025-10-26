@@ -186,7 +186,7 @@
         const gameState = {
             questions: JSON.parse('{{ questions | tojson | safe }}'),
             currentIndex: 0,
-            totalScore: 0,
+            totalScore: Number('{{ current_score }}'),  // Initialize with user's current DB score
             timeLeft: 60,
             timerId: null,
             userId: Number('{{ user_id }}'),
@@ -201,6 +201,7 @@
         const currentQuestionDisplay = document.getElementById('current-question');
         const totalQuestionsDisplay = document.getElementById('total-questions');
         const currentScoreDisplay = document.getElementById('current-score');
+        currentScoreDisplay.textContent = gameState.totalScore;  // Show initial score from DB
         const progressBar = document.getElementById('progress-bar');
         const answerForm = document.getElementById('answer-form');
         const skipBtn = document.getElementById('skip-btn');
@@ -296,6 +297,9 @@
 
                 const result = await response.json();
 
+                // Ensure we capture DB response identifiers so frontend can send feedback
+                const dbResp = result.db_response || {};
+
                 // Navigate to result page with data
                 const resultData = {
                     evaluation: result.evaluation,
@@ -305,7 +309,11 @@
                     totalQuestions: gameState.questions.length,
                     totalScore: gameState.totalScore + result.score,
                     theme: gameState.theme,
-                    userId: gameState.userId
+                    userId: gameState.userId,
+                    // IDs returned by backend store_response (may be used to send feedback)
+                    player_id: dbResp.player_id ?? gameState.userId,
+                    question_id: dbResp.question_id ?? question.id,
+                    response_id: dbResp.id ?? null
                 };
 
                 localStorage.setItem('gameState', JSON.stringify(gameState));
