@@ -75,6 +75,10 @@ async def get_random_questions(
             "theme": q.theme,
             "question_text": q.question_text
         })
+    
+    # Get current user score
+    player = await crud.get_player(db, user_id)
+    current_score = player.score if player else 0
 
     # Return the game interface with questions
     return templates.TemplateResponse(
@@ -83,7 +87,8 @@ async def get_random_questions(
         {
             "questions": questions_dict,
             "user_id": user_id,
-            "theme": theme
+            "theme": theme,
+            "current_score": current_score
         }
     )
 
@@ -107,8 +112,12 @@ async def get_result_page(request: Request):
 
 
 @router.get("/next", response_class=HTMLResponse)
-async def get_next_question_page(request: Request):
+async def get_next_question_page(
+    request: Request,
+    db: AsyncSession = Depends(get_session)
+):
     """Display the next question page"""
+    # We'll get current_user from cookie in the JS and initialize score correctly
     return templates.TemplateResponse(request, "next_question.html", {})
 
 
