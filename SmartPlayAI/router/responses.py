@@ -31,6 +31,7 @@ async def answer_question(
     question_id: int = Form(...),
     question_text: str = Form(...),
     response_text: str = Form(...),
+    theme: str = Form(...),
     db: AsyncSession = Depends(get_session),
     current_user: schemas.PlayerRead = Depends(get_current_user_from_cookie),
 ):
@@ -44,8 +45,13 @@ async def answer_question(
         score = cached.score
         verdict = "GOOD" if score is not None and score >= 3 else "BAD"
     else:
+        print("Theme received in responses.py:", theme)
         # Evaluate with LLM
-        evaluation_text, result = evaluate_answer(question_text, response_text)
+        if theme != "" and theme not in ["interview", "work", "survival"]:
+            raise HTTPException(
+                status_code=400, detail="Invalid theme specified.")
+        evaluation_text, result = evaluate_answer(
+            question_text, response_text, theme)
         score = result.get("score")
         verdict = result.get("verdict")
 
@@ -82,7 +88,8 @@ async def set_response_feedback(
     Update like/dislike status for a response so developers can review preferences.
     """
     if current_user.id != player_id:
-        raise HTTPException(status_code=403, detail="Cannot modify another player's feedback.")
+        raise HTTPException(
+            status_code=403, detail="Cannot modify another player's feedback.")
 
     db_response = await crud.update_response_like_status(db, player_id, question_id, feedback.liked)
     if not db_response:
