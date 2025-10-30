@@ -304,6 +304,9 @@
 
                 const result = await response.json();
 
+                // Ensure we capture DB response identifiers so frontend can send feedback
+                const dbResp = result.db_response || {};
+
                 // Navigate to result page with data
                 const resultData = {
                     evaluation: result.evaluation,
@@ -313,7 +316,11 @@
                     totalQuestions: gameState.questions.length,
                     totalScore: gameState.totalScore + result.score,
                     theme: gameState.theme,
-                    userId: gameState.userId
+                    userId: gameState.userId,
+                    // IDs returned by backend store_response (may be used to send feedback)
+                    player_id: dbResp.player_id ?? gameState.userId,
+                    question_id: dbResp.question_id ?? question.id,
+                    response_id: dbResp.id ?? null
                 };
 
                 localStorage.setItem('resultData', JSON.stringify(resultData));
