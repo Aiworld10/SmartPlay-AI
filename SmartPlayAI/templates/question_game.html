@@ -291,6 +291,14 @@
 
                 const result = await response.json();
 
+                // DEBUG: Log the response from the server
+                console.log('=== DEBUG: Server Response ===');
+                console.log('Full result:', result);
+                console.log('Evaluation:', result.evaluation);
+                console.log('Verdict:', result.verdict);
+                console.log('Score:', result.score);
+                console.log('============================');
+
                 // Ensure we capture DB response identifiers so frontend can send feedback
                 const dbResp = result.db_response || {};
 

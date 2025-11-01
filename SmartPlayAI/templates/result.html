@@ -156,14 +156,26 @@
         const resultData = JSON.parse(localStorage.getItem('resultData') || '{}');
         const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
 
+        // DEBUG: Log what data we received
+        console.log('=== DEBUG: Result Page Data ===');
+        console.log('resultData:', resultData);
+        console.log('Evaluation text:', resultData.evaluation);
+        console.log('Evaluation length:', resultData.evaluation ? resultData.evaluation.length : 0);
+        console.log('Verdict:', resultData.verdict);
+        console.log('Score:', resultData.score);
+        console.log('==============================');
+
         if (!resultData || !("evaluation" in resultData)) {
             // No result data - redirect to theme selection
+            console.warn('No evaluation in resultData, redirecting...');
             window.location.href = '/auth/theme-selection';
         }
 
 
         // Display result data
-        document.getElementById('evaluation-text').textContent = resultData.evaluation;
+        const evaluationText = resultData.evaluation || 'No evaluation provided';
+        document.getElementById('evaluation-text').textContent = evaluationText;
+        console.log('Set evaluation-text to:', evaluationText);
         document.getElementById('score-value').textContent = resultData.score || 0;
         document.getElementById('current-question').textContent = (resultData.currentIndex + 1) || 1;
         document.getElementById('total-questions').textContent = resultData.totalQuestions || 5;

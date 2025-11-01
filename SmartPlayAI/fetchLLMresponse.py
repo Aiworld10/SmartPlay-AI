@@ -14,6 +14,13 @@ headers = {"Content-Type": "application/json"}
 # pass the url to SERVEO_HOST env variable
 
 def evaluate_player_response(question: str, answer: str):
+    print(f"\n{'='*60}")
+    print(f"[DEBUG] Starting evaluation")
+    print(f"[DEBUG] SERVEO_HOST URL: {url}")
+    print(f"[DEBUG] Question: {question[:100]}...")
+    print(f"[DEBUG] Answer: {answer[:100]}...")
+    print(f"{'='*60}\n")
+
     data = {
         "model": "qwen3:14b",
         "messages": [
@@ -50,27 +57,45 @@ def evaluate_player_response(question: str, answer: str):
     }
 
     try:
+        print(f"[DEBUG] Making POST request to: {url}")
         response = requests.post(url, headers=headers,
                                  data=json.dumps(data), timeout=10)
+        print(f"[DEBUG] Response status code: {response.status_code}")
 
         if not response.ok:
+            print(f"[DEBUG] Response not OK. Status: {response.status_code}")
+            print(f"[DEBUG] Response text: {response.text[:500]}")
             raise RuntimeError(
                 f"API Error {response.status_code}: {response.text}")
 
         body = response.json()
+        print(f"[DEBUG] Response body keys: {body.keys()}")
         content = body.get("message", {}).get("content", "").strip()
+        print(f"[DEBUG] Content received: {content[:200]}...")
 
         lines = content.split("\n")
         json_line = lines[-1].strip()
         evaluation_text = "\n".join(lines[:-1]).strip()
 
+        print(f"[DEBUG] Evaluation text: {evaluation_text[:200]}...")
+        print(f"[DEBUG] JSON line: {json_line}")
+
         try:
             result = json.loads(json_line)
-        except json.JSONDecodeError:
+            print(f"[DEBUG] Parsed result: {result}")
+        except json.JSONDecodeError as je:
+            print(f"[DEBUG] JSON decode error: {je}")
             result = {"verdict": None, "score": None}
 
+        print(f"[DEBUG] Final result - Verdict: {result.get('verdict')}, Score: {result.get('score')}")
         return evaluation_text, result
     except Exception as e:
+        print(f"\n[ERROR] {'='*60}")
+        print(f"[ERROR] Exception type: {type(e).__name__}")
+        print(f"[ERROR] Exception message: {e}")
+        import traceback
+        traceback.print_exc()
+        print(f"[ERROR] {'='*60}\n")
         print(f"[Fallback] Using default evaluation due to error: {e}")
         return "", {"verdict": "BAD", "score": 1}
 
