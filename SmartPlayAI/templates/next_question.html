@@ -55,8 +55,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         .question-card {
@@ -122,6 +129,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -152,12 +160,8 @@
                 <div class="question-text" id="question-text">Loading question...</div>
 
                 <form id="answer-form">
-                    <textarea
-                        class="answer-textarea"
-                        id="answer-input"
-                        placeholder="Type your answer here... (max 150 words)"
-                        maxlength="1500"
-                    ></textarea>
+                    <textarea class="answer-textarea" id="answer-input"
+                        placeholder="Type your answer here... (max 150 words)" maxlength="1500"></textarea>
                     <div class="word-counter" id="word-counter">0 / 150 words</div>
 
                     <div class="btn-container">
@@ -289,6 +293,7 @@
                 formData.append('question_id', currentQuestion.id);
                 formData.append('question_text', currentQuestion.question_text);
                 formData.append('response_text', finalAnswer);
+                formData.append('theme', gameState.theme);
 
                 const response = await fetch('/responses/answer', {
                     method: 'POST',
@@ -299,6 +304,9 @@
 
                 const result = await response.json();
 
+                // Ensure we capture DB response identifiers so frontend can send feedback
+                const dbResp = result.db_response || {};
+
                 // Navigate to result page with data
                 const resultData = {
                     evaluation: result.evaluation,
@@ -308,7 +316,11 @@
                     totalQuestions: gameState.questions.length,
                     totalScore: gameState.totalScore + result.score,
                     theme: gameState.theme,
-                    userId: gameState.userId
+                    userId: gameState.userId,
+                    // IDs returned by backend store_response (may be used to send feedback)
+                    player_id: dbResp.player_id ?? gameState.userId,
+                    question_id: dbResp.question_id ?? question.id,
+                    response_id: dbResp.id ?? null
                 };
 
                 localStorage.setItem('resultData', JSON.stringify(resultData));
