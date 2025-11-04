@@ -333,6 +333,18 @@
             </div>
         </div>
 
+        <!-- NAvigation to the users profile-->
+        <div class="leaderboard-item fade-in" style="animation-delay: ${index * 0.05}s">
+            <div class="player-info">
+                <div class="rank-badge ${rankClass}">${medal || rank}</div>
+                <div class="player-name" onclick="viewPlayerProfile(${player.id})" title="Click to view ${player.name || 'Anonymous'}'s profile">
+                    ${player.name || 'Anonymous'}
+                </div>
+            </div>
+            <div class="player-score">${player.score || 0}</div>
+        </div>
+
+
         <!-- Pagination Controls -->
         <div id="pagination-controls" style="display: none; margin-top: 20px;">
             <div class="pagination-info" style="text-align: center; margin-bottom: 15px; color: #6c757d;">
@@ -510,7 +522,7 @@
                         <div class="player-info">
                             <div class="rank-badge ${rankClass}">${medal || rank}</div>
                             <div>
-                                <div class="player-name">${player.name || 'Anonymous'}</div>
+                                <div class="player-name" onclick="viewPlayerProfile(${player.id})" style="cursor: pointer; color: #007bff;" title="Click to view profile">${player.name || 'Anonymous'}</div>
                                 <div class="stats-row">
                                     <span><i class="fas fa-gamepad me-1"></i>${player.games_played} games</span>
                                     <span><i class="fas fa-chart-line me-1"></i>Avg: ${player.average_score.toFixed(1)}</span>
@@ -622,6 +634,16 @@
             prevBtn.disabled = currentPage === 1;
             nextBtn.disabled = currentPage >= totalPages;
         }
+
+        // // Function to navigate to player profile page
+        function viewPlayerProfile(playerId) {
+            if (!playerId) {
+                console.error('Invalid player ID');
+                return;
+            }
+            window.location.href = `/players/id/${playerId}`;
+        }
+
 
         // Pagination button handlers
         document.getElementById('prev-page-btn').addEventListener('click', () => {
