@@ -11,18 +11,237 @@
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
+        /* CSS Variables for Light and Dark Gaming Themes */
+        :root {
+            /* Light Theme (Default) */
+            --bg-primary: #f4f6fa;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #495057;
+            --border-color: #dee2e6;
+            --navbar-bg: #0d6efd;
+            --navbar-text: #fff;
+            --card-bg: #fff;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --btn-primary-bg: #0d6efd;
+            --btn-primary-text: #fff;
+            --btn-secondary-bg: #6c757d;
+            --input-bg: #fff;
+            --input-border: #dee2e6;
+            --link-color: #0d6efd;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #0dcaf0;
+        }
+
+        /* Gaming Dark Theme */
+        body.dark-mode {
+            --bg-primary: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            --bg-secondary: #1a1f3a;
+            --bg-tertiary: #252b48;
+            --text-primary: #e0e6ff;
+            --text-secondary: #a8b3cf;
+            --text-muted: #8891aa;
+            --border-color: #2d3454;
+            --navbar-bg: linear-gradient(90deg, #6b2aff 0%, #8b5cf6 50%, #a78bfa 100%);
+            --navbar-text: #fff;
+            --card-bg: #1e2540;
+            --card-shadow: rgba(107, 42, 255, 0.2);
+            --btn-primary-bg: linear-gradient(135deg, #6b2aff 0%, #8b5cf6 100%);
+            --btn-primary-text: #fff;
+            --btn-secondary-bg: #2d3454;
+            --input-bg: #252b48;
+            --input-border: #3d4567;
+            --link-color: #a78bfa;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
+        }
+
+        /* Base Styles */
         body {
-            background: #f4f6fa;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Dark mode specific background */
+        body.dark-mode {
+            background: #0a0e27;
+            background-image:
+                radial-gradient(at 20% 30%, rgba(107, 42, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(167, 139, 250, 0.05) 0px, transparent 50%);
+            min-height: 100vh;
         }
 
         .container-custom {
             max-width: 400px;
             margin: 60px auto;
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px var(--card-shadow);
             padding: 32px 24px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark mode enhancements */
+        body.dark-mode .container-custom {
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--card-shadow), 0 0 20px rgba(107, 42, 255, 0.1);
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: var(--navbar-bg) !important;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .navbar {
+            box-shadow: 0 4px 20px rgba(107, 42, 255, 0.3);
+        }
+
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: rgba(107, 42, 255, 0.3);
+            border-color: rgba(167, 139, 250, 0.5);
+            box-shadow: 0 0 15px rgba(107, 42, 255, 0.4);
+        }
+
+        body.dark-mode .dark-mode-toggle:hover {
+            background: rgba(107, 42, 255, 0.5);
+            box-shadow: 0 0 20px rgba(107, 42, 255, 0.6);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .card {
+            box-shadow: 0 4px 15px var(--card-shadow);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .btn-primary {
+            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.4);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 42, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--btn-secondary-bg);
+            color: var(--text-primary);
+        }
+
+        /* Forms */
+        .form-control, .form-select {
+            background: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background: var(--input-bg);
+            border-color: #8b5cf6;
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.25rem rgba(107, 42, 255, 0.25);
+        }
+
+        /* Text Colors */
+        .text-primary {
+            color: var(--link-color) !important;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Links */
+        a {
+            color: var(--link-color);
+        }
+
+        /* Alerts */
+        body.dark-mode .alert {
+            border-color: var(--border-color);
+        }
+
+        /* Modal */
+        body.dark-mode .modal-content {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        body.dark-mode .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        body.dark-mode .modal-footer {
+            border-top-color: var(--border-color);
+        }
+
+        body.dark-mode .btn-close {
+            filter: invert(1);
+        }
+
+        /* Badges */
+        body.dark-mode .badge {
+            box-shadow: 0 0 10px rgba(107, 42, 255, 0.3);
+        }
+
+        /* Progress Bar */
+        body.dark-mode .progress {
+            background: var(--bg-tertiary);
+        }
+
+        body.dark-mode .progress-bar {
+            background: linear-gradient(90deg, #6b2aff, #8b5cf6);
+            box-shadow: 0 0 10px rgba(107, 42, 255, 0.5);
         }
     </style>
 </head>
@@ -58,7 +277,53 @@
                     <i class="fas fa-user-circle me-1"></i>Welcome, Guest!
                 </span>
                 {% endif %}
+                <!-- Dark Mode Toggle -->
+                <button class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()">
+                    <i class="fas fa-moon" id="darkModeIcon"></i>
+                    <span id="darkModeText">Dark Mode</span>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- Dark Mode JavaScript -->
+    <script>
+        // Apply dark mode immediately from localStorage
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Initialize dark mode from localStorage
+        function initDarkMode() {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                updateDarkModeButton(true);
+            }
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            updateDarkModeButton(isDarkMode);
+        }
+
+        // Update button text and icon
+        function updateDarkModeButton(isDarkMode) {
+            const icon = document.getElementById('darkModeIcon');
+            const text = document.getElementById('darkModeText');
+
+            if (isDarkMode) {
+                icon.className = 'fas fa-sun';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.className = 'fas fa-moon';
+                text.textContent = 'Dark Mode';
+            }
+        }
+
+        // Initialize on page load
+        initDarkMode();
+    </script>
 </header>

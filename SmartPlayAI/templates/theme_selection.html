@@ -8,6 +8,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <style>
+        /* CSS Variables for Light and Dark Themes */
+        :root {
+            --bg-primary: #f4f6fa;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #495057;
+            --border-color: #dee2e6;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --link-color: #0d6efd;
+        }
+
+        body.dark-mode {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1e2540;
+            --bg-tertiary: #252b48;
+            --text-primary: #e0e6ff;
+            --text-secondary: #a8b3cf;
+            --text-muted: #8891aa;
+            --border-color: #2d3454;
+            --card-shadow: rgba(107, 42, 255, 0.2);
+            --link-color: #a78bfa;
+            background: #0a0e27 !important;
+
+            background-image:
+            radial-gradient(at 20% 30%, rgba(107, 42, 255, 0.15) 0px, transparent 50%),
+            radial-gradient(at 80% 70%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+            radial-gradient(at 50% 50%, rgba(167, 139, 250, 0.05) 0px, transparent 50%);
+        }
+
         .theme-card {
             margin: 0 auto;
         }
@@ -46,12 +77,17 @@
         @keyframes shine {
             to { background-position: - 200% center; }
         }
-        
+
     </style>
 </head>
 
-
 <body class="bg-light">
+    <script>
+        // Apply dark mode immediately when body starts rendering
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
     {% include 'header.html' %}
     <div class="container py-5">
         <div class="text-center mb-4">
