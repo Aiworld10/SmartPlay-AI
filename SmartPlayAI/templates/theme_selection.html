@@ -12,6 +12,15 @@
             margin: 0 auto;
         }
 
+        .card-img-top i {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card:hover .card-img-top i {
+            transform: rotateY(360deg);
+        }
+
         .carousel-item {
             text-align: center;
         }
@@ -23,6 +32,21 @@
         .card:hover .card-img-top {
             transform: scale(1.05);
         }
+
+        .text-center.mb-4 h2 {
+            background: linear-gradient(90deg, #1a1a1a 0%, #667eea 25%, #f093fb 50%, #764ba2 75%, #1a1a1a 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shine 2s linear infinite;
+            font-weight: 700;
+        }
+
+        @keyframes shine {
+            to { background-position: - 200% center; }
+        }
+        
     </style>
 </head>
 
