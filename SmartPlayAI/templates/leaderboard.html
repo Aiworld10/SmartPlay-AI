@@ -8,20 +8,61 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
+        /* CSS Variables for Light and Dark Themes */
+        :root {
+            --bg-primary: #f4f6fa;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #495057;
+            --border-color: #dee2e6;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --link-color: #0d6efd;
+        }
+
+        body.dark-mode {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1e2540;
+            --bg-tertiary: #252b48;
+            --text-primary: #e0e6ff;
+            --text-secondary: #a8b3cf;
+            --text-muted: #8891aa;
+            --border-color: #2d3454;
+            --card-shadow: rgba(107, 42, 255, 0.2);
+            --link-color: #a78bfa;
+        }
+
         body {
-            background: #f4f6fa;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             padding: 40px 0;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: #0a0e27;
+            background-image:
+                radial-gradient(at 20% 30%, rgba(107, 42, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(167, 139, 250, 0.05) 0px, transparent 50%);
         }
 
         .leaderboard-container {
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
-            background: #fff;
+            background: var(--bg-secondary, #fff);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px var(--card-shadow, rgba(0, 0, 0, 0.1));
             padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .leaderboard-container {
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(107, 42, 255, 0.2), 0 0 20px rgba(107, 42, 255, 0.1);
         }
 
         .leaderboard-header {
@@ -98,14 +139,22 @@
             justify-content: space-between;
             padding: 20px;
             margin-bottom: 12px;
-            background: #f8f9fa;
+            background: var(--bg-tertiary, #f8f9fa);
             border-radius: 8px;
             transition: all 0.3s ease;
         }
 
+        body.dark-mode .leaderboard-item {
+            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
+        }
+
         .leaderboard-item:hover {
-            background: #e9ecef;
+            background: var(--bg-tertiary, #e9ecef);
             transform: translateX(5px);
+        }
+
+        body.dark-mode .leaderboard-item:hover {
+            box-shadow: 0 4px 20px rgba(107, 42, 255, 0.2);
         }
 
         .rank-badge {
@@ -149,7 +198,7 @@
         .player-name {
             font-size: 18px;
             font-weight: 600;
-            color: #212529;
+            color: var(--text-primary, #212529);
         }
 
         .player-score {
@@ -159,16 +208,24 @@
         }
 
         .detail-card {
-            background: #fff;
-            border: 1px solid #e9ecef;
+            background: var(--bg-secondary, #fff);
+            border: 1px solid var(--border-color, #e9ecef);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 15px;
             transition: all 0.3s ease;
         }
 
+        body.dark-mode .detail-card {
+            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
+        }
+
         .detail-card:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .detail-card:hover {
+            box-shadow: 0 6px 20px rgba(107, 42, 255, 0.2);
         }
 
         .detail-header {
@@ -210,32 +267,50 @@
         .question-text {
             font-size: 16px;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-muted, #495057);
             margin-bottom: 15px;
             padding: 15px;
-            background: #f8f9fa;
-            border-left: 4px solid #007bff;
+            background: var(--bg-tertiary, #f8f9fa);
+            border-left: 4px solid var(--link-color, #007bff);
             border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .question-text {
+            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
         }
 
         .response-text {
             font-size: 14px;
-            color: #212529;
+            color: var(--text-primary, #212529);
             margin-bottom: 15px;
             padding: 15px;
-            background: #e7f3ff;
+            background: var(--bg-tertiary, #e7f3ff);
             border-radius: 4px;
             line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .response-text {
+            background: rgba(107, 42, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
         }
 
         .feedback-text {
             font-size: 14px;
-            color: #6c757d;
+            color: var(--text-secondary, #6c757d);
             padding: 15px;
-            background: #fff9e6;
+            background: var(--bg-tertiary, #fff9e6);
             border-radius: 4px;
             line-height: 1.6;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid var(--warning-color, #ffc107);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .feedback-text {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: #f59e0b;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
         }
 
         .no-data {
@@ -281,10 +356,62 @@
             font-size: 13px;
             color: #6c757d;
         }
+
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            color: #212529;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: rgba(107, 42, 255, 0.3);
+            border-color: rgba(167, 139, 250, 0.5);
+            color: white;
+            box-shadow: 0 0 15px rgba(107, 42, 255, 0.4);
+        }
+
+        body.dark-mode .dark-mode-toggle:hover {
+            background: rgba(107, 42, 255, 0.5);
+            box-shadow: 0 0 20px rgba(107, 42, 255, 0.6);
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        // Apply dark mode immediately when body starts rendering
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()">
+        <i class="fas fa-moon" id="darkModeIcon"></i>
+        <span id="darkModeText">Dark Mode</span>
+    </button>
+
     <div class="leaderboard-container fade-in">
         <div class="leaderboard-header">
             <div class="trophy-icon">🏆</div>
@@ -672,6 +799,31 @@
         localStorage.removeItem('gameState');
         localStorage.removeItem('resultData');
         localStorage.removeItem('nextQuestionData');
+
+        // Dark mode toggle functions
+        function toggleDarkMode() {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            updateDarkModeButton(isDarkMode);
+        }
+
+        function updateDarkModeButton(isDarkMode) {
+            const icon = document.getElementById('darkModeIcon');
+            const text = document.getElementById('darkModeText');
+
+            if (isDarkMode) {
+                icon.className = 'fas fa-sun';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.className = 'fas fa-moon';
+                text.textContent = 'Dark Mode';
+            }
+        }
+
+        // Initialize button state
+        if (localStorage.getItem('darkMode') === 'true') {
+            updateDarkModeButton(true);
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
