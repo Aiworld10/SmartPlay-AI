@@ -78,6 +78,23 @@
             to { background-position: -200% center; }
         }
 
+        /* Focus guy animation */
+        .focus-guy {
+            display: inline-block;
+            margin-top: 20px;
+            animation: focus-pulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.3));
+        }
+
+        @keyframes focus-pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
     </style>
 </head>
 
@@ -94,7 +111,8 @@
 
             <h2>Welcome, <span id="username">{{ username }}</span>!</h2>
             <!-- <p>Your current score: <span id="score">{{ user_score }}</span></p> -->
-            <h4>Select a Theme to Start Playing</h4>
+            <h4>Select a Theme to Start Playing <div class="focus-guy" style="font-size: 40px;">👨‍💻</div>
+            </h4>
         </div>
         <div id="themeCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner justify-content-center">
@@ -113,6 +131,7 @@
                         </div>
                     </div>
                 </div>
+                
 
                 <!-- Work Theme -->
                 <div class="carousel-item">
