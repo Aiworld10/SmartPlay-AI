@@ -412,7 +412,8 @@
 </head>
 
 <body>
-
+    <audio id="bgMusic" src="/static/bg.mp3" preload="auto" loop></audio>
+    <audio id="countdownMusic" src="/static/countdown.mp3" preload="auto"></audio>
     <!-- ------------------------------------------------------------
          NAVBAR (UPDATED)
     ------------------------------------------------------------ -->
@@ -496,6 +497,30 @@
         }
 
         initDarkMode();
+
+        let musicStarted = false;
+
+        document.addEventListener("click", () => {
+            if (!musicStarted) {
+                document.getElementById("bgMusic").volume = 0.5;
+                document.getElementById("bgMusic").play();
+                musicStarted = true;
+            }
+        });
+
+        function fadeAudio(audio, targetVolume, duration = 1000) {
+            const step = (targetVolume - audio.volume) / (duration / 50);
+            const interval = setInterval(() => {
+                audio.volume += step;
+                if ((step > 0 && audio.volume >= targetVolume) ||
+                    (step < 0 && audio.volume <= targetVolume)) {
+                    audio.volume = targetVolume;
+                    clearInterval(interval);
+                }
+            }, 50);
+        }
+
+
     </script>
 
 </body>

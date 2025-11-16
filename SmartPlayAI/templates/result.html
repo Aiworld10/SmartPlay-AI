@@ -227,6 +227,11 @@
                 Loading evaluation...
             </div>
 
+            <!-- Lazy reveal control for long evaluations -->
+            <button id="loadMoreEval" class="btn btn-sm btn-outline-primary mt-2 d-none">
+                Continue ...
+            </button>
+
             <!-- Like / Dislike controls -->
             <div class="mt-3 d-flex align-items-center gap-2" id="feedback-controls">
                 <button id="like-btn" class="btn btn-outline-success" title="Like feedback">
@@ -260,8 +265,7 @@
         }
 
 
-        // Display result data
-        document.getElementById('evaluation-text').textContent = resultData.evaluation;
+        // Display result data (evaluation handled via lazy loader below)
         document.getElementById('score-value').textContent = resultData.score || 0;
         document.getElementById('current-question').textContent = (resultData.currentIndex + 1) || 1;
         document.getElementById('total-questions').textContent = resultData.totalQuestions || 5;
@@ -320,6 +324,103 @@
             const nextBtn = document.getElementById('next-btn');
             nextBtn.innerHTML = '<i class="fas fa-trophy me-2"></i>View Leaderboard';
         }
+
+        // --- Lazy-load long evaluation text: 40-word chunks ---
+        (function setupLazyEvaluation() {
+            const CHUNK_SIZE = 50; // words per chunk
+            const WORD_DELAY_MS = 100; // typing speed per word
+            const evalEl = document.getElementById('evaluation-text');
+            const moreBtn = document.getElementById('loadMoreEval');
+
+            if (!evalEl || !moreBtn) return;
+
+            const state = { chunks: [], shown: 0, typing: false };
+
+            function buildChunks(text) {
+                const words = (text || '').trim().replace(/\s+/g, ' ').split(' ').filter(Boolean);
+                const chunks = [];
+                for (let i = 0; i < words.length; i += CHUNK_SIZE) {
+                    chunks.push(words.slice(i, i + CHUNK_SIZE).join(' '));
+                }
+                return chunks;
+            }
+
+            function clearEval() {
+                while (evalEl.firstChild) evalEl.removeChild(evalEl.firstChild);
+            }
+
+            function typeWords(el, text, onDone) {
+                const words = (text || '').split(' ');
+                let i = 0;
+                state.typing = true;
+
+                function step() {
+                    if (i >= words.length) {
+                        state.typing = false;
+                        onDone && onDone();
+                        return;
+                    }
+                    const chunk = (i === 0 ? '' : ' ') + words[i++];
+                    el.appendChild(document.createTextNode(chunk));
+                    setTimeout(step, WORD_DELAY_MS);
+                }
+                step();
+            }
+
+            function renderNext() {
+                if (state.typing) return; // avoid double-trigger while typing
+                if (state.shown >= state.chunks.length) return;
+
+                const p = document.createElement('p');
+                p.className = 'mb-2';
+                evalEl.appendChild(p);
+
+                // Disable button and show typing status while animating
+                moreBtn.disabled = true;
+                const prevLabel = moreBtn.textContent;
+                moreBtn.textContent = '...';
+
+                const text = state.chunks[state.shown++];
+                typeWords(p, text, () => {
+                    if (state.shown >= state.chunks.length) {
+                        moreBtn.classList.add('d-none');
+                    } else {
+                        moreBtn.disabled = false;
+                        moreBtn.textContent = prevLabel || 'Continue ...';
+                    }
+                });
+            }
+
+            function init(text) {
+                state.chunks = buildChunks(text);
+                state.shown = 0;
+                clearEval();
+
+                if (state.chunks.length === 0) {
+                    evalEl.textContent = 'No evaluation available.';
+                    moreBtn.classList.add('d-none');
+                    return;
+                }
+
+                // Prepare button label
+                moreBtn.textContent = 'Continue ...';
+
+                // Show first chunk automatically (with typing)
+                renderNext();
+
+                // Toggle button visibility
+                if (state.chunks.length > 1) {
+                    moreBtn.classList.remove('d-none');
+                } else {
+                    moreBtn.classList.add('d-none');
+                }
+            }
+
+            moreBtn.addEventListener('click', renderNext);
+
+            // Initialize with the evaluation string from localStorage
+            init(resultData.evaluation || '');
+        })();
 
         // --- Feedback (Like / Dislike) handling ---
         (function setupFeedbackControls() {

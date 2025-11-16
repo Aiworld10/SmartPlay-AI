@@ -100,6 +100,7 @@
         }
 
         @keyframes pulse {
+
             0%,
             100% {
                 transform: scale(1);
@@ -285,6 +286,10 @@
         </div>
     </div>
 
+    <!-- Background and countdown audio -->
+    <audio id="bgMusic" src="/static/bg.mp3" preload="auto" loop></audio>
+    <audio id="countdownMusic" src="/static/countdown.mp3" preload="auto"></audio>
+
     <script>
         // Load game state from localStorage
         const nextQuestionData = JSON.parse(localStorage.getItem('nextQuestionData') || '{}');
@@ -355,6 +360,8 @@
 
         function updateTimer() {
             timerDisplay.textContent = timeLeft + 's';
+            // Sync countdown audio with time remaining
+            updateMusicCountdown(timeLeft);
             timerDisplay.classList.remove('warning', 'danger');
 
             if (timeLeft <= 10) {
@@ -369,6 +376,55 @@
                 clearInterval(timerId);
                 timerId = null;
             }
+            // Ensure countdown audio stops when timer stops
+            updateMusicCountdown(0);
+        }
+
+        // Countdown audio controller: plays when <= 10s, pauses otherwise
+        let isCountdownPlaying = false;
+        function updateMusicCountdown(secondsLeft) {
+            const audio = document.getElementById('countdownMusic');
+            if (!audio) return;
+
+            if (secondsLeft > 0 && secondsLeft <= 10) {
+                if (!isCountdownPlaying) {
+                    try {
+                        audio.loop = true;
+                        if (typeof audio.volume === 'number') audio.volume = Math.min(audio.volume || 0.7, 0.9);
+                        const p = audio.play();
+                        if (p && typeof p.catch === 'function') p.catch(() => { });
+                        isCountdownPlaying = true;
+                    } catch (_) { }
+                }
+            } else {
+                if (isCountdownPlaying) {
+                    try { audio.pause(); } catch (_) { }
+                    try { audio.currentTime = 0; } catch (_) { }
+                    isCountdownPlaying = false;
+                }
+            }
+        }
+
+        // Background music: start after first user gesture (autoplay policies)
+        function setupAudioAutoplayGate() {
+            const bg = document.getElementById('bgMusic');
+            if (!bg) return;
+
+            const unlock = async () => {
+                try {
+                    bg.loop = true;
+                    if (typeof bg.volume === 'number') bg.volume = Math.min(bg.volume || 0.35, 0.8);
+                    const p = bg.play();
+                    if (p && typeof p.catch === 'function') await p.catch(() => { });
+                } catch (_) { }
+                window.removeEventListener('pointerdown', unlock);
+                window.removeEventListener('keydown', unlock);
+                window.removeEventListener('touchstart', unlock);
+            };
+
+            window.addEventListener('pointerdown', unlock, { once: true });
+            window.addEventListener('keydown', unlock, { once: true });
+            window.addEventListener('touchstart', unlock, { once: true });
         }
 
         // Submit answer
@@ -486,7 +542,8 @@
             submitAnswer();
         });
 
-        // Start the timer
+        // Start audio unlock gate and then the timer
+        setupAudioAutoplayGate();
         startTimer();
         answerInput.focus();
 
