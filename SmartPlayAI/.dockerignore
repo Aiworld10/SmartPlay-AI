@@ -13,3 +13,6 @@ tests/
 *.pyc
 .DS_Store
 Thumbs.db
+.venv/
+.mypy_cache/
+*.egg-info/

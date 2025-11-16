@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY ".python-version" "uv.lock" "pyproject.toml" ./
 
-RUN uv sync --locked --no-cache
+RUN uv sync --locked --no-cache --no-dev
 
 COPY . .
 
