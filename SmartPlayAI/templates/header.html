@@ -4,16 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome to SmartPlayAI</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
     <style>
-        /* CSS Variables for Light and Dark Gaming Themes */
+        /* THEME VARIABLES */
         :root {
-            /* Light Theme (Default) */
             --bg-primary: #f4f6fa;
             --bg-secondary: #fff;
             --bg-tertiary: #f8f9fa;
@@ -37,7 +40,6 @@
             --info-color: #0dcaf0;
         }
 
-        /* Gaming Dark Theme */
         body.dark-mode {
             --bg-primary: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
             --bg-secondary: #1a1f3a;
@@ -62,43 +64,38 @@
             --info-color: #06b6d4;
         }
 
-        /* Base Styles */
         body {
             background: var(--bg-primary);
             color: var(--text-primary);
             transition: all 0.3s ease;
+            min-height: 100vh;
         }
 
-        /* Dark mode specific background */
         body.dark-mode {
             background: #0a0e27;
             background-image:
                 radial-gradient(at 20% 30%, rgba(107, 42, 255, 0.15) 0px, transparent 50%),
                 radial-gradient(at 80% 70%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
                 radial-gradient(at 50% 50%, rgba(167, 139, 250, 0.05) 0px, transparent 50%);
-            min-height: 100vh;
         }
 
-        .container-custom {
-            max-width: 400px;
-            margin: 60px auto;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px var(--card-shadow);
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.3s ease;
+        /* TEXT COLORS (you asked for this) */
+        .text-primary {
+            color: var(--link-color) !important;
         }
 
-        /* Dark mode enhancements */
-        body.dark-mode .container-custom {
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 32px var(--card-shadow), 0 0 20px rgba(107, 42, 255, 0.1);
+        .text-secondary {
+            color: var(--text-secondary) !important;
         }
 
-        /* Navbar Styles */
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* NAVBAR */
         .navbar {
             background: var(--navbar-bg) !important;
+            color: var(--navbar-text);
             transition: all 0.3s ease;
         }
 
@@ -106,7 +103,7 @@
             box-shadow: 0 4px 20px rgba(107, 42, 255, 0.3);
         }
 
-        /* Dark Mode Toggle Button */
+        /* DARK MODE TOGGLE */
         .dark-mode-toggle {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -138,192 +135,369 @@
             box-shadow: 0 0 20px rgba(107, 42, 255, 0.6);
         }
 
-        /* Cards */
-        .card {
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border-color: var(--border-color);
-            transition: all 0.3s ease;
+        /* 2025 ID PILL */
+        .id-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 14px;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            color: #fff !important;
+            transition: all 0.25s ease;
         }
 
-        body.dark-mode .card {
-            box-shadow: 0 4px 15px var(--card-shadow);
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: var(--btn-primary-bg);
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .btn-primary {
-            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.4);
-        }
-
-        body.dark-mode .btn-primary:hover {
+        .id-pill:hover {
+            background: rgba(255, 255, 255, 0.28);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(107, 42, 255, 0.6);
         }
 
-        .btn-secondary {
-            background: var(--btn-secondary-bg);
-            color: var(--text-primary);
+        body.dark-mode .id-pill {
+            background: rgba(255, 255, 255, 0.10);
+            border-color: rgba(255, 255, 255, 0.22);
         }
 
-        /* Forms */
-        .form-control, .form-select {
-            background: var(--input-bg);
-            border-color: var(--input-border);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+        /* 2025 LOGOUT BUTTON */
+        .logout-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(255, 65, 108, 0.35);
+            transition: all 0.25s ease;
         }
 
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus {
-            background: var(--input-bg);
-            border-color: #8b5cf6;
-            color: var(--text-primary);
-            box-shadow: 0 0 0 0.25rem rgba(107, 42, 255, 0.25);
+        .logout-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 75, 43, 0.45);
+            opacity: 0.95;
         }
 
-        /* Text Colors */
-        .text-primary {
-            color: var(--link-color) !important;
+        body.dark-mode .logout-pill {
+            background: linear-gradient(135deg, #ff5f8f, #ff3c2d);
+            box-shadow: 0 4px 18px rgba(255, 80, 80, 0.35);
         }
 
-        .text-secondary {
-            color: var(--text-secondary) !important;
-        }
-
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        /* Links */
-        a {
-            color: var(--link-color);
-        }
-
-        /* Alerts */
-        body.dark-mode .alert {
-            border-color: var(--border-color);
-        }
-
-        /* Modal */
-        body.dark-mode .modal-content {
+        /* ALERTS (your game-alert-modern) */
+        .game-alert-modern {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            position: relative;
+            border: 1px solid var(--border-color);
             background: var(--bg-secondary);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            font-weight: 500;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .game-alert-modern .icon i {
+            transition: transform .2s ease;
+        }
+
+        .game-alert-modern:hover .icon i {
+            transform: scale(1.15);
+        }
+
+        .game-alert-modern .text {
+            flex-grow: 1;
             color: var(--text-primary);
-            border-color: var(--border-color);
         }
 
-        body.dark-mode .modal-header {
-            border-bottom-color: var(--border-color);
+        .game-alert-modern button.btn-close {
+            position: absolute;
+            right: 12px;
+            filter: brightness(0.6);
         }
 
-        body.dark-mode .modal-footer {
-            border-top-color: var(--border-color);
+        .game-alert-modern.error {
+            border-left: 5px solid #dc3545;
+            background: rgba(220, 53, 69, 0.08);
         }
 
-        body.dark-mode .btn-close {
-            filter: invert(1);
+        .game-alert-modern.error .icon {
+            color: #dc3545;
         }
 
-        /* Badges */
-        body.dark-mode .badge {
-            box-shadow: 0 0 10px rgba(107, 42, 255, 0.3);
+        .game-alert-modern.success {
+            border-left: 5px solid #28a745;
+            background: rgba(40, 167, 69, 0.08);
         }
 
-        /* Progress Bar */
-        body.dark-mode .progress {
-            background: var(--bg-tertiary);
+        .game-alert-modern.success .icon {
+            color: #28a745;
         }
 
-        body.dark-mode .progress-bar {
-            background: linear-gradient(90deg, #6b2aff, #8b5cf6);
-            box-shadow: 0 0 10px rgba(107, 42, 255, 0.5);
+        body.dark-mode .game-alert-modern {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+        }
+
+        body.dark-mode .game-alert-modern.error {
+            background: rgba(220, 53, 69, 0.12);
+            border-left-color: #ff6b81;
+        }
+
+        body.dark-mode .game-alert-modern.success {
+            background: rgba(40, 167, 69, 0.12);
+            border-left-color: #66e07f;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* PRIMARY BUTTON (login, start playing, register submit) */
+        .game-btn-primary {
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text) !important;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all .25s ease;
+            box-shadow: 0 4px 12px var(--card-shadow);
+        }
+
+        .game-btn-primary:hover {
+            opacity: .92;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--card-shadow);
+        }
+
+        /* SECONDARY BUTTON (cancel, create account, modal actions) */
+        .game-btn-secondary {
+            background: var(--btn-secondary-bg);
+            color: #fff !important;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all .25s ease;
+            opacity: .95;
+        }
+
+        .game-btn-secondary:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        /* DARK MODE OVERRIDE */
+        body.dark-mode .game-btn-primary {
+            background: var(--btn-primary-bg);
+            box-shadow: 0 4px 16px rgba(107, 42, 255, 0.35);
+        }
+
+        body.dark-mode .game-btn-secondary {
+            background: var(--btn-secondary-bg);
+            color: var(--text-primary) !important;
+        }
+
+        /* SMALL BUTTON WIDTHS */
+        .w-45 {
+            width: 45%;
+        }
+
+        /* MOBILE RESPONSIVE NAVBAR */
+        @media (max-width: 991px) {
+            .navbar .container-fluid {
+                flex-wrap: nowrap;
+            }
+
+            .navbar-nav {
+                padding: 15px 0;
+            }
+
+            .navbar-collapse {
+                background: var(--navbar-bg);
+                border-radius: 8px;
+                margin-top: 10px;
+                padding: 10px;
+            }
+
+            .navbar .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+                width: 100%;
+                gap: 10px !important;
+            }
+
+            .id-pill,
+            .logout-pill {
+                font-size: 0.75rem;
+                padding: 5px 12px;
+            }
+
+            .dark-mode-toggle {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .dark-mode-toggle span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            .badge {
+                font-size: 0.7rem;
+            }
+
+            .id-pill,
+            .logout-pill {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+                gap: 4px;
+            }
+
+            .dark-mode-toggle {
+                padding: 5px 10px;
+            }
+        }
+
+        /* Navbar toggler icon */
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.3);
+            padding: 0.25rem 0.5rem;
+            margin-left: auto;
+            order: 2;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.25);
+        }
+
+        .navbar-toggler-icon {
+            width: 1.2em;
+            height: 1.2em;
+        }
+
+        @media (max-width: 991px) {
+            .navbar .container-fluid {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
         }
     </style>
+
 </head>
-<header>
+
+<body>
+
+    <!-- ------------------------------------------------------------
+         NAVBAR (UPDATED)
+    ------------------------------------------------------------ -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container-fluid">
+
             <a class="navbar-brand" href="/">
                 <i class="fas fa-brain me-2"></i>SmartPlay AI
             </a>
-            <div class="d-flex align-items-center gap-3">
-                {% if username %}
-                <!-- Logged-in user -->
-                <span class="text-white">
-                    <i class="fas fa-user me-1"></i>{{ username }}
-                </span>
-                <span class="badge bg-warning text-dark">
-                    <i class="fas fa-star me-1"></i>{{ user_score }}
-                </span>
-                <span class="text-white">
-                    <a href="/players/id/{{ user_id }}" class="text-white text-decoration-none">
+
+            <!-- Mobile hamburger toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Collapsible content -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="d-flex align-items-center gap-3 ms-auto">
+
+                    {% if username %}
+                    <span class="text-white">
+                        <i class="fas fa-user me-1"></i>{{ username }}
+                    </span>
+
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-star me-1"></i>{{ user_score }}
+                    </span>
+
+                    <!-- NEW ID PILL -->
+                    <a href="/players/id/{{ user_id }}" class="id-pill">
                         <i class="fas fa-id-badge me-1"></i>
                         ID: {{ user_id }}
                     </a>
-                </span>
-                <form action="/auth/logout" method="post" style="display: inline; margin: 0;">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Log Out
+
+                    <!-- NEW LOGOUT PILL -->
+                    <form action="/auth/logout" method="post" class="m-0 p-0">
+                        <button type="submit" class="logout-pill">
+                            <i class="fas fa-sign-out-alt me-1"></i>
+                            Logout
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    <!-- Dark Mode Toggle -->
+                    <button class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon" id="darkModeIcon"></i>
+                        <span id="darkModeText">Dark Mode</span>
                     </button>
-                </form>
-                {% else %}
-                <!-- Guest user -->
-                <span class="text-white">
-                    <i class="fas fa-user-circle me-1"></i>Welcome, Guest!
-                </span>
-                {% endif %}
-                <!-- Dark Mode Toggle -->
-                <button class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()">
-                    <i class="fas fa-moon" id="darkModeIcon"></i>
-                    <span id="darkModeText">Dark Mode</span>
-                </button>
+
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Dark Mode JavaScript -->
+    <!-- ------------------------------------------------------------
+         DARK MODE JS
+    ------------------------------------------------------------ -->
     <script>
-        // Apply dark mode immediately from localStorage
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
         }
 
-        // Initialize dark mode from localStorage
         function initDarkMode() {
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-                updateDarkModeButton(true);
-            }
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) updateDarkModeButton(true);
         }
 
-        // Toggle dark mode
         function toggleDarkMode() {
-            const isDarkMode = document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', isDarkMode);
-            updateDarkModeButton(isDarkMode);
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            updateDarkModeButton(isDark);
         }
 
-        // Update button text and icon
-        function updateDarkModeButton(isDarkMode) {
-            const icon = document.getElementById('darkModeIcon');
-            const text = document.getElementById('darkModeText');
+        function updateDarkModeButton(isDark) {
+            document.getElementById('darkModeIcon').className =
+                isDark ? 'fas fa-sun' : 'fas fa-moon';
 
-            if (isDarkMode) {
-                icon.className = 'fas fa-sun';
-                text.textContent = 'Light Mode';
-            } else {
-                icon.className = 'fas fa-moon';
-                text.textContent = 'Dark Mode';
-            }
+            document.getElementById('darkModeText').textContent =
+                isDark ? 'Light Mode' : 'Dark Mode';
         }
 
-        // Initialize on page load
         initDarkMode();
     </script>
-</header>
+
+</body>
+
+</html>

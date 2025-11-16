@@ -1,129 +1,240 @@
-<body>
+<body class="smartplay-body">
     {% include 'header.html' %}
-    <div class="container container-custom">
-        <h1 class="mb-3 text-primary">Welcome to SmartPlayAI</h1>
-        <div class="text-secondary mb-4">
-            Enter your user name to log in or create a new user.<br>
-            You can also check the leaderboard.
-        </div>
 
-        <!-- Error Message -->
-        {% if error_message %}
-        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>{{ error_message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
+    <main>
 
-        <!-- Success Message -->
-        {% if success_message %}
-        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ success_message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
+        <!-- HERO SECTION -->
+        <section class="hero-section py-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-xl-7">
+                        <!-- ALERTS SECTION (GLOBAL MESSAGES) -->
+                        <section class="mt-3">
+                            <div class="container">
 
-        <!-- Login Form -->
-        <form hx-post="/auth/login" hx-target="body" method="post" class="mb-3">
-            <input type="text" name="username" class="form-control mb-3" placeholder="Enter your user name" required>
-            <input type="password" name="password" class="form-control mb-3" placeholder="Enter your password" required>
-            <button type="submit" class="btn btn-primary w-100">Log In</button>
-        </form>
-        {% if user %}
-        <style>
-            form[hx-post="/auth/login"] {
-                display: none !important;
-            }
-        </style>
-        <div class="alert alert-success mb-3">
-            Logged in as {{ user.name if user.name is defined else user }}.
-        </div>
-        {% endif %}
-        <!-- Create New Player Trigger -->
-        {% if user %}
-        <a href="/auth/theme-selection" class="btn btn-primary w-100 mb-2">Go to Theme Selection</a>
-        {% else %}
-        <button type="button" class="btn btn-secondary w-100 mb-2" data-bs-toggle="modal"
-            data-bs-target="#registerModal">
-            Create Account
-        </button>
-        {% endif %}
+                                {% if error_message %}
+                                <div class="alert game-alert-modern error alert-dismissible fade show mb-3 animate-fade-in"
+                                    role="alert">
+                                    <div class="icon">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="text">
+                                        {{ error_message }}
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                                {% endif %}
 
-        <a href="/questions/leaderboard" class="d-block mt-3 fw-bold text-decoration-none text-primary">View
-            Leaderboard</a>
-    </div>
+                                {% if success_message %}
+                                <div class="alert game-alert-modern success alert-dismissible fade show mb-3 animate-fade-in"
+                                    role="alert">
+                                    <div class="icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="text">
+                                        {{ success_message }}
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                                {% endif %}
 
-    <!-- Register Modal -->
-    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form hx-post="/auth/register" hx-target="body" method="post">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="registerModalLabel">Create New Player</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                        </section>
+                        <div
+                            class="hero-card game-panel mx-auto p-4 p-md-5 rounded-4 shadow-sm text-center animate-fade-up">
+
+                            <!-- Title -->
+                            <h1 class="fw-bold mb-3 hero-title animate-bounce-in">
+                                Welcome to <span class="text-primary">SmartPlayAI</span>
+                            </h1>
+
+                            <!-- Subtitle -->
+                            <p class="text-secondary mb-4 hero-subtitle">
+                                A fast-paced challenge to sharpen your thinking.<br>
+                                Pick a theme, get a random question, and beat the 60-second clock.
+                            </p>
+
+                            <!-- Rules -->
+                            <div class="rules-box text-start mx-auto mb-4">
+                                <ul class="list-unstyled rules-list mb-0">
+                                    <li class="mb-2 animate-slide-left">
+                                        <i class="fas fa-bolt text-primary me-2"></i>
+                                        Answer within 60 seconds
+                                    </li>
+                                    <li class="mb-2 animate-slide-left delay-1">
+                                        <i class="fas fa-pen-nib text-primary me-2"></i>
+                                        Keep it under 150 words
+                                    </li>
+                                    <li class="mb-2 animate-slide-left delay-2">
+                                        <i class="fas fa-robot text-primary me-2"></i>
+                                        AI scores your response from 1–5
+                                    </li>
+                                    <li class="mb-2 animate-slide-left delay-3">
+                                        <i class="fas fa-comments text-primary me-2"></i>
+                                        Get explanation & verdict instantly
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <p class="fw-semibold mt-2 mb-3 hero-cta-text">
+                                Log in to start playing or create an account to join the fun.
+                            </p>
+
+                            <!-- CTA AREA (depends on user) -->
+                            {% if user %}
+                            <div class="mt-3">
+                                <div class="game-alert-modern success animate-fade-in mb-3">
+                                    <div class="icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="text">
+                                        Logged in as {{ username }}.
+                                    </div>
+                                </div>
+                                <a href="/auth/theme-selection"
+                                    class="btn btn-primary btn-lg w-100 mb-2 game-btn-primary">
+                                    Start Playing
+                                </a>
+                            </div>
+                            {% else %}
+                            <div class="d-grid gap-3 mt-3">
+                                <button class="btn py-2 fw-semibold shadow-sm game-btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Log In
+                                </button>
+
+                                <button class="btn py-2 fw-semibold shadow-sm game-btn-secondary" data-bs-toggle="modal"
+                                    data-bs-target="#registerModal">
+                                    <i class="fas fa-user-plus me-2"></i> Create Account
+                                </button>
+                            </div>
+                            {% endif %}
+
+                            <a href="/questions/leaderboard"
+                                class="d-block mt-4 fw-bold text-decoration-none text-primary game-link">
+                                View Leaderboard
+                            </a>
+
+                        </div>
+
                     </div>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <div class="modal fade game-modal" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content game-modal-panel animate-fade-up">
+
+                <form action="/auth/login" method="post">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold text-primary">Log In</h5>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                    </div>
+
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input name="username" type="text" class="form-control" required minlength="3">
+                            <label class="form-label fw-semibold text-primary">Username</label>
+                            <input type="text" name="username" class="form-control game-input" required>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input name="password1" id="password1" type="password" class="form-control" required
-                                minlength="6">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input name="password2" id="password2" type="password" class="form-control" required
-                                minlength="6">
-                            <div id="password-match-message" class="text-danger mt-1" style="display: none;">
-                                Passwords do not match.
-                            </div>
+                            <label class="form-label fw-semibold text-primary">Password</label>
+                            <input type="password" name="password" class="form-control game-input" required>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Register</button>
+
+                    <div class="modal-footer border-0 d-flex justify-content-between">
+                        <button type="button" class="btn game-btn-secondary w-45"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn game-btn-primary w-45">Log In</button>
                     </div>
                 </form>
+
+
             </div>
         </div>
     </div>
-    <!-- Bootstrap JS (optional, for some components) -->
+
+    <!-- REGISTER MODAL -->
+    <div class="modal fade game-modal" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content game-modal-panel animate-fade-up">
+
+                <form action="/auth/register" method="post">
+
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold text-primary">Create New Player</h5>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-primary">Username</label>
+                            <input name="username" type="text" class="form-control game-input" required minlength="3">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-primary">Password</label>
+                            <input name="password1" id="password1" type="password" class="form-control game-input"
+                                required minlength="6">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-primary">Confirm Password</label>
+                            <input name="password2" id="password2" type="password" class="form-control game-input"
+                                required minlength="6">
+                            <div id="password-match-message" class="text-danger mt-1" style="display:none;">
+                                Passwords do not match.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer border-0 d-flex justify-content-between">
+                        <button type="button" class="btn game-btn-secondary w-45"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn game-btn-primary w-45">Register</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Password validation for registration form
         function validatePasswords() {
             const password1 = document.getElementById('password1');
             const password2 = document.getElementById('password2');
             const message = document.getElementById('password-match-message');
             const submitBtn = document.querySelector('#registerModal button[type="submit"]');
 
-            if (password1 && password2 && message && submitBtn) {
-                if (password1.value !== password2.value && password2.value !== '') {
-                    message.style.display = 'block';
-                    password2.classList.add('is-invalid');
-                    submitBtn.disabled = true;
-                } else {
-                    message.style.display = 'none';
-                    password2.classList.remove('is-invalid');
-                    submitBtn.disabled = false;
-                }
+            if (password1.value !== password2.value && password2.value !== '') {
+                message.style.display = 'block';
+                password2.classList.add('is-invalid');
+                submitBtn.disabled = true;
+            } else {
+                message.style.display = 'none';
+                password2.classList.remove('is-invalid');
+                submitBtn.disabled = false;
             }
         }
 
-        // Add event listeners when the modal is shown
-        document.addEventListener('DOMContentLoaded', function () {
-            const password1 = document.getElementById('password1');
-            const password2 = document.getElementById('password2');
-
-            if (password1 && password2) {
-                password1.addEventListener('input', validatePasswords);
-                password2.addEventListener('input', validatePasswords);
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('password1')?.addEventListener('input', validatePasswords);
+            document.getElementById('password2')?.addEventListener('input', validatePasswords);
         });
     </script>
+
 </body>
 
 </html>

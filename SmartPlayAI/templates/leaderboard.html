@@ -5,10 +5,9 @@
     <meta charset="UTF-8">
     <title>SmartPlayAI - Leaderboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='/leaderboard.css') }}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
-        /* CSS Variables for Light and Dark Themes */
         :root {
             --bg-primary: #f4f6fa;
             --bg-secondary: #fff;
@@ -37,7 +36,6 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            padding: 40px 0;
             transition: all 0.3s ease;
         }
 
@@ -49,282 +47,6 @@
                 radial-gradient(at 50% 50%, rgba(167, 139, 250, 0.05) 0px, transparent 50%);
         }
 
-        .leaderboard-container {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            background: var(--bg-secondary, #fff);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px var(--card-shadow, rgba(0, 0, 0, 0.1));
-            padding: 40px;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .leaderboard-container {
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 32px rgba(107, 42, 255, 0.2), 0 0 20px rgba(107, 42, 255, 0.1);
-        }
-
-        .leaderboard-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .trophy-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-
-        .theme-filter {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .theme-btn {
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: 2px solid #007bff;
-            background: white;
-            color: #007bff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .theme-btn:hover {
-            background: #007bff;
-            color: white;
-        }
-
-        .theme-btn.active {
-            background: #007bff;
-            color: white;
-        }
-
-        .view-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .toggle-btn {
-            padding: 8px 24px;
-            border-radius: 20px;
-            border: 2px solid #6c757d;
-            background: white;
-            color: #6c757d;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .toggle-btn:hover {
-            background: #6c757d;
-            color: white;
-        }
-
-        .toggle-btn.active {
-            background: #6c757d;
-            color: white;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            margin-bottom: 12px;
-            background: var(--bg-tertiary, #f8f9fa);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .leaderboard-item {
-            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
-        }
-
-        .leaderboard-item:hover {
-            background: var(--bg-tertiary, #e9ecef);
-            transform: translateX(5px);
-        }
-
-        body.dark-mode .leaderboard-item:hover {
-            box-shadow: 0 4px 20px rgba(107, 42, 255, 0.2);
-        }
-
-        .rank-badge {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 20px;
-            margin-right: 20px;
-        }
-
-        .rank-1 {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #856404;
-        }
-
-        .rank-2 {
-            background: linear-gradient(135deg, #c0c0c0, #d3d3d3);
-            color: #383d41;
-        }
-
-        .rank-3 {
-            background: linear-gradient(135deg, #cd7f32, #e59866);
-            color: #fff;
-        }
-
-        .rank-other {
-            background: #dee2e6;
-            color: #495057;
-        }
-
-        .player-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
-
-        .player-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary, #212529);
-        }
-
-        .player-score {
-            font-size: 24px;
-            font-weight: 700;
-            color: #007bff;
-        }
-
-        .detail-card {
-            background: var(--bg-secondary, #fff);
-            border: 1px solid var(--border-color, #e9ecef);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .detail-card {
-            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
-        }
-
-        .detail-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .detail-card:hover {
-            box-shadow: 0 6px 20px rgba(107, 42, 255, 0.2);
-        }
-
-        .detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f8f9fa;
-        }
-
-        .player-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            background: #007bff;
-            color: white;
-            border-radius: 15px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .score-badge {
-            font-size: 24px;
-            font-weight: 700;
-            color: #28a745;
-        }
-
-        .theme-label {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #6c757d;
-            color: white;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .question-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-muted, #495057);
-            margin-bottom: 15px;
-            padding: 15px;
-            background: var(--bg-tertiary, #f8f9fa);
-            border-left: 4px solid var(--link-color, #007bff);
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .question-text {
-            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
-        }
-
-        .response-text {
-            font-size: 14px;
-            color: var(--text-primary, #212529);
-            margin-bottom: 15px;
-            padding: 15px;
-            background: var(--bg-tertiary, #e7f3ff);
-            border-radius: 4px;
-            line-height: 1.6;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .response-text {
-            background: rgba(107, 42, 255, 0.1);
-            box-shadow: 0 4px 15px rgba(107, 42, 255, 0.1);
-        }
-
-        .feedback-text {
-            font-size: 14px;
-            color: var(--text-secondary, #6c757d);
-            padding: 15px;
-            background: var(--bg-tertiary, #fff9e6);
-            border-radius: 4px;
-            line-height: 1.6;
-            border-left: 4px solid var(--warning-color, #ffc107);
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .feedback-text {
-            background: rgba(245, 158, 11, 0.1);
-            border-left-color: #f59e0b;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
-        }
-
-        .btn-container {
-            margin-top: 30px;
-            display: flex;
-            gap: 15px;
-        }
-
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
@@ -334,86 +56,26 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .theme-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 50px;
-            background: #007bff;
-            color: white;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 15px;
-            font-size: 13px;
-            color: #6c757d;
-        }
-
-        /* Dark Mode Toggle Button */
-        .dark-mode-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.05);
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            color: #212529;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .dark-mode-toggle:hover {
-            background: rgba(0, 0, 0, 0.1);
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        body.dark-mode .dark-mode-toggle {
-            background: rgba(107, 42, 255, 0.3);
-            border-color: rgba(167, 139, 250, 0.5);
-            color: white;
-            box-shadow: 0 0 15px rgba(107, 42, 255, 0.4);
-        }
-
-        body.dark-mode .dark-mode-toggle:hover {
-            background: rgba(107, 42, 255, 0.5);
-            box-shadow: 0 0 20px rgba(107, 42, 255, 0.6);
         }
     </style>
 </head>
 
 <body>
     <script>
-        // Apply dark mode immediately when body starts rendering
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
         }
     </script>
 
-    <!-- Dark Mode Toggle Button -->
-    <button class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()">
-        <i class="fas fa-moon" id="darkModeIcon"></i>
-        <span id="darkModeText">Dark Mode</span>
-    </button>
+    {% include 'header.html' %}
 
-    <div class="leaderboard-container fade-in">
-        <div class="leaderboard-header">
+    <div class="leaderboard-container fade-in" style="margin-top: 40px;">
+        <div class="leaderboard-header text-center mb-4">
             <div class="trophy-icon">🏆</div>
             <h2 class="text-primary mb-2">Leaderboard</h2>
             <div class="theme-badge" id="theme-badge">All Themes</div>
@@ -460,24 +122,14 @@
             </div>
         </div>
 
-        <!-- NAvigation to the users profile-->
-        <div class="leaderboard-item fade-in" style="animation-delay: ${index * 0.05}s">
-            <div class="player-info">
-                <div class="rank-badge ${rankClass}">${medal || rank}</div>
-                <div class="player-name" onclick="viewPlayerProfile(${player.id})" title="Click to view ${player.name || 'Anonymous'}'s profile">
-                    ${player.name || 'Anonymous'}
-                </div>
-            </div>
-            <div class="player-score">${player.score || 0}</div>
-        </div>
-
-
         <!-- Pagination Controls -->
         <div id="pagination-controls" style="display: none; margin-top: 20px;">
             <div class="pagination-info" style="text-align: center; margin-bottom: 15px; color: #6c757d;">
-                <span id="pagination-text">Showing <strong id="page-start">1</strong>-<strong id="page-end">10</strong> of <strong id="total-items">0</strong> responses</span>
+                <span id="pagination-text">Showing <strong id="page-start">1</strong>-<strong id="page-end">10</strong>
+                    of <strong id="total-items">0</strong> responses</span>
             </div>
-            <div class="pagination-buttons" style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+            <div class="pagination-buttons"
+                style="display: flex; justify-content: center; align-items: center; gap: 15px;">
                 <button class="btn btn-outline-primary" id="prev-page-btn" disabled>
                     <i class="fas fa-chevron-left me-1"></i>Previous
                 </button>
@@ -498,309 +150,9 @@
         </div>
     </div>
 
+    <script src="{{ url_for('static', path='/leaderboard.js') }}"></script>
     <script>
-        let currentTheme = '';
-        let currentView = 'summary';
-        let currentLikedFilter = ''; // '', 'true', or 'false'
-
-        // Pagination state
-        let allDetailedData = []; // Store all fetched detailed data
-        let currentPage = 1;
-        const itemsPerPage = 10;
-
-        // Theme filter functionality
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentTheme = this.dataset.theme;
-
-                const themeBadge = document.getElementById('theme-badge');
-                themeBadge.textContent = this.textContent;
-
-                currentPage = 1; // Reset to first page when filter changes
-                loadData();
-            });
-        });
-
-        // View toggle functionality
-        document.querySelectorAll('.toggle-btn[data-view]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.toggle-btn[data-view]').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentView = this.dataset.view;
-
-                // Show/hide like filter based on view
-                const likeFilterContainer = document.getElementById('like-filter-container');
-                const paginationControls = document.getElementById('pagination-controls');
-                if (currentView === 'detailed') {
-                    likeFilterContainer.style.display = 'flex';
-                } else {
-                    likeFilterContainer.style.display = 'none';
-                    paginationControls.style.display = 'none';
-                }
-
-                loadData();
-            });
-        });
-
-        // Like filter functionality
-        document.querySelectorAll('.toggle-btn[data-liked]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.toggle-btn[data-liked]').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentLikedFilter = this.dataset.liked;
-                currentPage = 1; // Reset to first page when filter changes
-                loadData();
-            });
-        });
-
-        // Load data based on current view
-        async function loadData() {
-            if (currentView === 'summary') {
-                await loadLeaderboard();
-            } else {
-                await loadDetailedView();
-            }
-        }
-
-        // Load summary leaderboard data
-        async function loadLeaderboard() {
-            try {
-                const url = currentTheme ? `/leaderboard?theme=${currentTheme}` : '/leaderboard';
-                const response = await fetch(url);
-
-                if (!response.ok) throw new Error('Failed to load leaderboard');
-
-                const leaderboard = await response.json();
-                displayLeaderboard(leaderboard);
-            } catch (error) {
-                console.error('Error loading leaderboard:', error);
-                document.getElementById('leaderboard-list').innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
-                        <p>Failed to load leaderboard</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Load detailed view data
-        async function loadDetailedView() {
-            try {
-                let url;
-
-                // If liked filter is active, use /responses/feedback endpoint
-                if (currentLikedFilter !== '') {
-                    url = `/responses/feedback?liked=${currentLikedFilter}`;
-                } else {
-                    // Otherwise use /leaderboard/details with theme filter
-                    url = currentTheme ? `/leaderboard/details?theme=${currentTheme}` : '/leaderboard/details';
-                }
-
-                const response = await fetch(url);
-
-                if (!response.ok) throw new Error('Failed to load details');
-
-                const details = await response.json();
-
-                // Sort by created_at DESC (newest first)
-                allDetailedData = details.sort((a, b) => {
-                    const dateA = new Date(a.created_at);
-                    const dateB = new Date(b.created_at);
-                    return dateB - dateA; // DESC order (newest first)
-                });
-
-                // Reset to first page when loading new data
-                currentPage = 1;
-                displayDetailedViewWithPagination();
-            } catch (error) {
-                console.error('Error loading details:', error);
-                document.getElementById('leaderboard-list').innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
-                        <p>Failed to load detailed view</p>
-                    </div>
-                `;
-            }
-        }
-
-        function displayLeaderboard(data) {
-            const container = document.getElementById('leaderboard-list');
-
-            if (!data || data.length === 0) {
-                container.innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                        <p>No players yet. Be the first to play!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '';
-            data.forEach((player, index) => {
-                const rank = index + 1;
-                const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
-                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-
-                html += `
-                    <div class="leaderboard-item fade-in" style="animation-delay: ${index * 0.05}s">
-                        <div class="player-info">
-                            <div class="rank-badge ${rankClass}">${medal || rank}</div>
-                            <div>
-                                <div class="player-name" onclick="viewPlayerProfile(${player.id})" style="cursor: pointer; color: #007bff;" title="Click to view profile">${player.name || 'Anonymous'}</div>
-                                <div class="stats-row">
-                                    <span><i class="fas fa-gamepad me-1"></i>${player.games_played} games</span>
-                                    <span><i class="fas fa-chart-line me-1"></i>Avg: ${player.average_score.toFixed(1)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="player-score">${player.score || 0}</div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function displayDetailedView(data) {
-            const container = document.getElementById('leaderboard-list');
-
-            if (!data || data.length === 0) {
-                container.innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                        <p>No responses found for this filter.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '';
-            data.forEach((item, index) => {
-                // Handle both /leaderboard/details and /responses/feedback response formats
-                const playerName = item.player_name || `Player ${item.player_id}`;
-                const theme = item.theme || 'Unknown';
-                const questionText = item.question_text || 'Question not available';
-
-                // Like status indicator
-                let likeStatusHtml = '';
-                if (item.liked === true) {
-                    likeStatusHtml = '<span class="badge bg-success ms-2"><i class="fas fa-thumbs-up me-1"></i>Liked</span>';
-                } else if (item.liked === false) {
-                    likeStatusHtml = '<span class="badge bg-danger ms-2"><i class="fas fa-thumbs-down me-1"></i>Disliked</span>';
-                }
-
-                html += `
-                    <div class="detail-card fade-in" style="animation-delay: ${index * 0.02}s">
-                        <div class="detail-header">
-                            <div>
-                                <span class="player-badge">${playerName}</span>
-                                <span class="theme-label ms-2">${theme.toUpperCase()}</span>
-                                ${likeStatusHtml}
-                            </div>
-                            <div class="score-badge">
-                                <i class="fas fa-star text-warning me-1"></i>${item.score}
-                            </div>
-                        </div>
-
-                        <div class="question-text">
-                            <i class="fas fa-question-circle me-2"></i>${questionText}
-                        </div>
-
-                        <div class="response-text">
-                            <strong><i class="fas fa-user me-2"></i>Response:</strong>
-                            <div class="mt-2">${item.response_text}</div>
-                        </div>
-
-                        ${item.llm_feedback ? `
-                            <div class="feedback-text">
-                                <strong><i class="fas fa-comment-dots me-2"></i>AI Feedback:</strong>
-                                <div class="mt-2">${item.llm_feedback}</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        // Display detailed view with pagination
-        function displayDetailedViewWithPagination() {
-            const paginationControls = document.getElementById('pagination-controls');
-
-            if (!allDetailedData || allDetailedData.length === 0) {
-                displayDetailedView([]);
-                paginationControls.style.display = 'none';
-                return;
-            }
-
-            // Calculate pagination
-            const totalItems = allDetailedData.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-            const pageData = allDetailedData.slice(startIndex, endIndex);
-
-            // Display the current page data
-            displayDetailedView(pageData);
-
-            // Update pagination controls
-            paginationControls.style.display = 'block';
-            document.getElementById('page-start').textContent = startIndex + 1;
-            document.getElementById('page-end').textContent = endIndex;
-            document.getElementById('total-items').textContent = totalItems;
-            document.getElementById('current-page-num').textContent = currentPage;
-
-            // Update button states
-            const prevBtn = document.getElementById('prev-page-btn');
-            const nextBtn = document.getElementById('next-page-btn');
-
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage >= totalPages;
-        }
-
-        // // Function to navigate to player profile page
-        function viewPlayerProfile(playerId) {
-            if (!playerId) {
-                console.error('Invalid player ID');
-                return;
-            }
-            window.location.href = `/players/id/${playerId}`;
-        }
-
-
-        // Pagination button handlers
-        document.getElementById('prev-page-btn').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayDetailedViewWithPagination();
-                // Scroll to top of list
-                document.getElementById('leaderboard-list').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-
-        document.getElementById('next-page-btn').addEventListener('click', () => {
-            const totalPages = Math.ceil(allDetailedData.length / itemsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                displayDetailedViewWithPagination();
-                // Scroll to top of list
-                document.getElementById('leaderboard-list').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-
-        // Load initial data on page load
-        loadData();
-
-        // Clear localStorage
-        localStorage.removeItem('gameState');
-        localStorage.removeItem('resultData');
-        localStorage.removeItem('nextQuestionData');
-
-        // Dark mode toggle functions
+        // Dark mode
         function toggleDarkMode() {
             const isDarkMode = document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', isDarkMode);
@@ -808,19 +160,10 @@
         }
 
         function updateDarkModeButton(isDarkMode) {
-            const icon = document.getElementById('darkModeIcon');
-            const text = document.getElementById('darkModeText');
-
-            if (isDarkMode) {
-                icon.className = 'fas fa-sun';
-                text.textContent = 'Light Mode';
-            } else {
-                icon.className = 'fas fa-moon';
-                text.textContent = 'Dark Mode';
-            }
+            document.getElementById('darkModeIcon').className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+            document.getElementById('darkModeText').textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
         }
 
-        // Initialize button state
         if (localStorage.getItem('darkMode') === 'true') {
             updateDarkModeButton(true);
         }

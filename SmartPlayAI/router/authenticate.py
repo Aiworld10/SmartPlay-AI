@@ -136,55 +136,29 @@ async def get_current_user_from_cookie(
 # Routes
 # ---------------------------
 
-@router.post("/login", response_class=HTMLResponse)
-async def login_for_access_token(
-    request: Request,
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_session),
-):
-    user = await authenticate_user(db, form_data.username, form_data.password)
+@router.post("/login")
+async def login_for_access_token(request: Request,
+                                 username: str = Form(...),
+                                 password: str = Form(...),
+                                 db: AsyncSession = Depends(get_session)):
+
+    user = await authenticate_user(db, username, password)
     if not user:
-        # Return the index page with error message for HTMX
-        return templates.TemplateResponse(
-            "index.html",
-            {
-                "request": request,
-                "user": None,
-                "username": None,
-                "error_message": "Incorrect username or password. Please try again."
-            }
-        )
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "error_message": "Incorrect username or password."
+        })
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    # access token has both username and user id
-    access_token = create_access_token(
-        {
-            "sub": user.name, "id": user.id
-        },
-        expires_delta=access_token_expires,
-    )
+    access_token = create_access_token({"sub": user.name, "id": user.id})
 
-    # Create response with redirect header for HTMX
-    response = templates.TemplateResponse(
-        request,
-        "index.html",
-        {
-            "user": user,
-            "username": user.name,
-            "user_score": user.score,
-            "success_message": f"Welcome back, {user.name}!"
-        }
-    )
+    response = RedirectResponse(url="/auth/theme-selection", status_code=303)
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
-        max_age=int(access_token_expires.total_seconds()),
         samesite="lax",
-        secure=secure,   # Set to True in production with HTTPS
+        secure=secure
     )
-    # Add HX-Redirect header to redirect after successful login
-    response.headers["HX-Redirect"] = "/auth/theme-selection"
     return response
 
 

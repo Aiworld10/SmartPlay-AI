@@ -100,6 +100,7 @@
         }
 
         @keyframes pulse {
+
             0%,
             100% {
                 transform: scale(1);
@@ -233,6 +234,119 @@
         body.dark-mode .dark-mode-toggle:hover {
             background: rgba(107, 42, 255, 0.5);
             box-shadow: 0 0 20px rgba(107, 42, 255, 0.6);
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+                border-radius: 8px;
+            }
+
+            .game-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .game-header p {
+                font-size: 0.9rem;
+            }
+
+            .progress-info {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            .timer {
+                font-size: 1.5rem;
+            }
+
+            .question-card {
+                padding: 20px;
+            }
+
+            .question-text {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+
+            .answer-textarea {
+                min-height: 120px;
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-container button {
+                width: 100%;
+            }
+
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .dark-mode-toggle span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 5px;
+            }
+
+            .game-container {
+                padding: 15px;
+                margin: 5px;
+            }
+
+            .game-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .progress-info {
+                font-size: 0.85rem;
+            }
+
+            .timer {
+                font-size: 1.3rem;
+            }
+
+            .question-card {
+                padding: 15px;
+            }
+
+            .question-text {
+                font-size: 0.95rem;
+            }
+
+            .answer-textarea {
+                min-height: 100px;
+                font-size: 13px;
+                padding: 10px;
+            }
+
+            .word-counter {
+                font-size: 12px;
+            }
+
+            .btn-container button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .dark-mode-toggle {
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
