@@ -19,18 +19,22 @@ BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI(title="SmartPlayAI", version="1.0.0")
 
 # Add middleware to handle proxy headers from Railway
+
+
 @app.middleware("http")
 async def add_proxy_headers(request: Request, call_next):
     # Trust forwarded headers from Railway proxy
     forwarded_proto = request.headers.get("x-forwarded-proto", "http")
-    forwarded_host = request.headers.get("x-forwarded-host", request.headers.get("host", ""))
-    
+    forwarded_host = request.headers.get(
+        "x-forwarded-host", request.headers.get("host", ""))
+
     # Update request scope to use HTTPS
     if forwarded_proto == "https":
         request.scope["scheme"] = "https"
     if forwarded_host:
-        request.scope["server"] = (forwarded_host, 443 if forwarded_proto == "https" else 80)
-    
+        request.scope["server"] = (
+            forwarded_host, 443 if forwarded_proto == "https" else 80)
+
     response = await call_next(request)
     return response
 
@@ -206,9 +210,9 @@ if __name__ == "__main__":
 
     port = int(os.getenv("PORT", 8080))
     uvicorn.run(
-        app, 
-        host="0.0.0.0", 
-        port=port, 
+        app,
+        host="0.0.0.0",
+        port=port,
         log_level="info",
         proxy_headers=True,  # Trust X-Forwarded-* headers
         forwarded_allow_ips="*"  # Allow all IPs (Railway proxy)
