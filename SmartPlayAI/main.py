@@ -13,24 +13,9 @@ from model import schemas
 from model.database import get_session
 from router import players, questions, responses, authenticate
 
-from starlette.middleware import Middleware
-from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
-
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(title="SmartPlayAI", version="1.0.0")
-
-# Add middleware to handle proxy headers from Railway
-
-middleware = [
-    Middleware(ProxyHeadersMiddleware, trusted_hosts=[
-        "smartplay.chasedream.dev",
-        "*.smartplay.chasedream.dev",
-        "*.railway.app",
-    ])
-]
-
-app = FastAPI(title="SmartPlayAI", version="1.0.0", middleware=middleware)
 
 
 @app.middleware("http")
