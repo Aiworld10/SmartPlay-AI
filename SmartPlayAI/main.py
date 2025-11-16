@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 from router.authenticate import _get_user_from_token
@@ -8,8 +7,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
-from transformers import pipeline  # local dev
-from huggingface_hub import InferenceClient  # inference API for production
 import random
 from model import crud as crud_ops  # to not re import in the route
 from model import schemas
@@ -27,16 +24,6 @@ app.include_router(players.router)
 app.include_router(questions.router)
 app.include_router(responses.router)
 app.include_router(authenticate.router)
-# This is for local development with a downloaded model
-# text_generator = pipeline(
-#     "text-generation",
-#     model="meta-llama/Llama-3.1-8B-Instruct",
-#     dtype="bfloat16",
-#     device_map="auto"
-# )
-
-# This is for production with Hugging Face Inference API
-client = InferenceClient()
 
 # Predefined themes for SmartPlay AI scenarios
 THEMES = ["survival", "work", "interview"]
@@ -183,7 +170,8 @@ async def get_leaderboard_details(
         return details
     except Exception as e:
         print(f"Error fetching leaderboard details: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard details")
+        raise HTTPException(
+            status_code=500, detail="Failed to fetch leaderboard details")
 
 
 if __name__ == "__main__":
