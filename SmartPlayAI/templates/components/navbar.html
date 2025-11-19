@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-brain me-2"></i>SmartPlay AI
+        </a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="d-flex align-items-center gap-3 ms-auto">
+
+                {% if username %}
+                <span class="text-white"><i class="fas fa-user me-1"></i>{{ username }}</span>
+
+                <span class="badge bg-warning text-dark">
+                    <i class="fas fa-star me-1"></i>{{ user_score }}
+                </span>
+
+                <a href="/players/id/{{ user_id }}" class="id-pill">
+                    <i class="fas fa-id-badge me-1"></i>ID: {{ user_id }}
+                </a>
+
+                <form action="/auth/logout" method="post" class="m-0 p-0">
+                    <button type="submit" class="logout-pill">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </button>
+                </form>
+                {% endif %}
+
+                <!-- Icons -->
+                {% include "components/nav_controls_navbar.html" %}
+
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- Global background music element available on all pages with navbar -->
+<audio id="bgMusic" src="/static/bg.mp3" preload="auto" loop></audio>

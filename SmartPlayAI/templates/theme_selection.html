@@ -177,16 +177,17 @@
         }
     </style>
 </head>
+{% include 'base_head.html' %}
 
 <body>
-
+    {% include "components/navbar.html" %}
     <script>
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
         }
     </script>
 
-    {% include 'header.html' %}
+
 
     <div class="container py-5">
         <div class="text-center mb-4">

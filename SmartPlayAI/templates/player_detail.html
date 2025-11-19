@@ -1,6 +1,7 @@
-{% include 'header.html' %}
-<div class="container py-5">
+{% include "base_head.html" %}
+<div class="container-fluid py-5" style="padding:0 !important;">
 
+    {% include "components/navbar.html" %}
     <!-- Player Header / Hero Section -->
     <div class="text-center mb-5">
         <div class="position-relative d-inline-block">
@@ -11,7 +12,7 @@
             </span>
         </div>
 
-        <h2 class="fw-bold text-dark mb-2">{{ player.name }}</h2>
+        <h2 class="fw-bold text mb-2">{{ player.name }}</h2>
         <p class="text-muted">
             <i class="fas fa-id-badge me-1"></i>ID: {{ player.id }}
         </p>
@@ -35,7 +36,7 @@
     </div>
 
     <!-- Player Responses by Theme -->
-    <div class="accordion shadow-sm rounded-3" id="responseAccordion">
+    <div class="container accordion shadow-sm rounded-3" id="responseAccordion">
         {% set themes = {"work":"briefcase", "survival":"campground", "interview":"comments"} %}
         {% for theme, icon in themes.items() %}
         {% set theme_responses = responses | selectattr("question_theme", "equalto", theme) | list %}

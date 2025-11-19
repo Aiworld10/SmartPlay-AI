@@ -1,0 +1,55 @@
+<!-- MUSIC + DARK MODE ICONS -->
+<button id="themeToggle" class="toggle-btn">
+    <i id="themeIcon" class="fas fa-moon"></i>
+</button>
+
+<button id="musicToggle" class="toggle-btn">
+    <i id="musicIcon" class="fas fa-volume-up"></i>
+</button>
+
+<script>
+    /* DARK MODE */
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    function toggleDarkMode() {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    /* MUSIC */
+    const bgMusic = document.getElementById("bgMusic");
+    let musicEnabled = localStorage.getItem("musicEnabled") !== "false";
+
+    function toggleMusic() {
+        musicEnabled = !musicEnabled;
+        localStorage.setItem("musicEnabled", musicEnabled);
+
+        const icon = document.getElementById('musicIcon');
+        if (bgMusic) {
+            if (musicEnabled) {
+                bgMusic.play().catch(() => { });
+            } else {
+                try { bgMusic.pause(); } catch (_) { }
+                try { bgMusic.currentTime = 0; } catch (_) { }
+            }
+        }
+        if (icon) icon.className = musicEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    }
+
+    /* AUTOPLAY UNLOCK */
+    if (musicEnabled) {
+        const unlock = () => {
+            bgMusic.play().catch(() => { });
+            window.removeEventListener("click", unlock);
+        };
+        window.addEventListener("click", unlock);
+    }
+
+    // Wire up buttons
+    document.getElementById('themeToggle')?.addEventListener('click', toggleDarkMode);
+    document.getElementById('musicToggle')?.addEventListener('click', toggleMusic);
+</script>
